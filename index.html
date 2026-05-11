@@ -2,372 +2,649 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pinoy Henyo Pro: ESL Edition</title>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PINOY HENYO</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
     <style>
+        /* -----------------------------------------------------------
+           Visual Identity (CSS)
+        ----------------------------------------------------------- */
         :root {
-            --royal-blue: #0047ab;
-            --gold: #fcd116;
-            --vivid-red: #c8102e;
-            --vivid-green: #00a651;
-            --vivid-orange: #ff9900;
-            --bg-dark: #0f0f0f;
+            /* 1. Color Palette */
+            --primary-blue: #0047AB; /* Royal Blue */
+            --bright-gold: #FFD700; /* Bright Gold */
+            --vivid-red: #FF0000;   /* Vivid Red */
+            --orange-pass: #FF8C00;
+            --green-correct: #32CD32;
+            --black-bg: #0A0A12;
+            --navy-bg: #001F5B;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Montserrat', 'Inter', sans-serif; }
-
         body {
-            background-color: var(--bg-dark);
+            margin: 0;
+            padding: 0;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
             color: white;
             height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             overflow: hidden;
+            background-color: var(--black-bg);
+            -webkit-user-select: none;
+            user-select: none;
         }
 
-        /* --- TITLE PAGE --- */
-        #titlePage {
-            position: fixed;
-            inset: 0;
-            background: url('image_8a0ea8.png') no-repeat center center;
-            background-size: cover;
+        /* Background: Dynamic animated background with floating translucent shapes */
+        #game-container {
+            width: 100%;
+            height: 100%;
             display: flex;
+            flex-direction: column;
+            position: relative;
+            background: linear-gradient(180deg, var(--black-bg) 0%, var(--navy-bg) 100%);
+            border: 5px solid transparent;
+            transition: border-color 0.1s ease-out;
+            box-sizing: border-box;
+        }
+
+        /* 3. State Management (Hidden states) */
+        .game-state { display: none; }
+        .active-state { display: flex; }
+
+        /* --- Start Screen --- */
+        #start-screen {
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            text-align: center;
+            gap: 20px;
+        }
+
+        /* Branding & Header */
+        .game-title {
+            font-size: 5rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            color: var(--bright-gold);
+            margin: 0;
+            text-shadow: 0 0 15px var(--bright-gold);
+        }
+
+        .game-subtitle {
+            font-size: 1.5rem;
+            color: white;
+            opacity: 0.8;
+            margin: 0 0 40px 0;
+        }
+
+        #start-button {
+            background-color: var(--primary-blue);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.5rem;
+            border-radius: 50px;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-weight: 900;
+            transition: background 0.2s;
+        }
+        #start-button:hover { background-color: #0056D6; }
+
+        /* Custom Input */
+        .input-group {
+            margin-top: 20px;
+            width: 80%;
+            max-width: 500px;
+        }
+        #word-list-input {
+            width: 100%;
+            height: 100px;
+            border-radius: 10px;
+            padding: 10px;
+            background: rgba(255,255,255,0.1);
+            border: 2px solid var(--primary-blue);
+            color: white;
+            font-family: inherit;
+        }
+
+        /* --- Game Loop Screen --- */
+        #game-loop {
+            flex-direction: column;
+            height: 100%;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+        }
+
+        /* Timer (Top) */
+        .top-ui {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+
+        #timer {
+            font-size: 4rem;
+            font-weight: 900;
+            color: var(--bright-gold);
+            margin-bottom: 10px;
+        }
+
+        #category-label {
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            color: white;
+            opacity: 0.7;
+        }
+
+        /* The Word (Center) */
+        .word-display-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            overflow: hidden;
+            position: relative;
+        }
+
+        #current-word {
+            font-size: 7rem; /* Massive (at least 5rem) */
+            font-weight: 900;
+            text-transform: uppercase;
+            white-space: nowrap;
+            /* 2. Word Transitions (Bounce/Scale in handled by JS) */
+        }
+
+        /* Horizontal Controls (Bottom) */
+        .controls-ui {
+            display: flex;
+            gap: 15px;
+            width: 100%;
+            max-width: 800px;
+            margin-bottom: 20px;
+        }
+
+        .control-btn {
+            flex: 1;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            font-weight: 900;
+            padding: 20px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .control-btn:active { opacity: 0.8; }
+
+        #btn-pass { background-color: var(--orange-pass); color: white; }
+        #btn-correct { background-color: var(--green-correct); color: white; }
+        #btn-pause { background-color: var(--primary-blue); color: white; }
+
+        /* Pause overlay */
+        #pause-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: none;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             z-index: 10;
         }
 
-        .menu-card {
-            background: rgba(0, 0, 0, 0.8);
-            padding: 30px;
-            border-radius: 20px;
-            border: 2px solid var(--gold);
-            text-align: center;
-            backdrop-filter: blur(5px);
-        }
-
-        /* --- GAME BOARD --- */
-        #gameBoard {
-            display: none;
-            width: 100%;
-            height: 100%;
-            position: relative;
-            background: #ce1126; /* Inspired by the red in your image */
-            background-image: url('image_8a0e51.jpg'); /* The texture from your theme image */
-            background-size: cover;
-            background-position: center;
-        }
-
-        /* Tribal Borders */
-        .border-trim {
-            height: 60px;
-            width: 100%;
-            background: var(--royal-blue);
-            border-top: 5px solid var(--gold);
-            border-bottom: 5px solid var(--gold);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
-
-        .top-trim { position: absolute; top: 0; }
-        .bottom-trim { position: absolute; bottom: 0; }
-
-        /* Floating Suns Background */
-        #particles {
-            position: absolute;
-            inset: 0;
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        .sun-particle {
-            position: absolute;
-            color: rgba(252, 209, 22, 0.2);
-            font-size: 40px;
-            animation: float 15s infinite linear;
-        }
-
-        @keyframes float {
-            from { transform: translateY(110vh) rotate(0deg); }
-            to { transform: translateY(-10vh) rotate(360deg); }
-        }
-
-        /* --- CONTENT AREA --- */
-        .content {
-            position: relative;
-            z-index: 2;
-            height: 100%;
-            display: flex;
+        /* --- Review Screen --- */
+        #review-screen {
             flex-direction: column;
-            justify-content: center;
             align-items: center;
+            justify-content: center;
+            height: 100%;
+            width: 100%;
         }
 
-        #timer {
-            font-size: 4rem;
-            font-weight: bold;
-            color: var(--gold);
-            text-shadow: 0 0 20px rgba(0,0,0,0.5);
-            margin-bottom: 20px;
-        }
-
-        .panic { color: var(--vivid-red) !important; animation: pulse 0.5s infinite; }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-
-        #wordDisplay {
-            font-size: 7rem;
-            font-weight: 900;
-            text-align: center;
-            text-transform: uppercase;
-            color: white;
-            text-shadow: 4px 4px 0 var(--royal-blue), 8px 8px 0 rgba(0,0,0,0.5);
-            animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        @keyframes popIn {
-            0% { transform: scale(0) rotate(-5deg); opacity: 0; }
-            100% { transform: scale(1) rotate(0deg); opacity: 1; }
-        }
-
-        /* --- CONTROLS --- */
-        .controls {
-            display: flex;
-            gap: 20px;
-            margin-top: 50px;
+        .review-table-container {
             width: 90%;
-            max-width: 800px;
+            max-width: 700px;
+            max-height: 70vh;
+            overflow-y: auto;
+            margin-top: 20px;
         }
 
-        .btn {
-            flex: 1;
-            padding: 25px;
-            font-size: 1.8rem;
-            font-weight: bold;
-            border: none;
-            border-radius: 15px;
-            cursor: pointer;
-            color: white;
-            transition: 0.2s;
-            text-transform: uppercase;
-            box-shadow: 0 8px 0 rgba(0,0,0,0.3);
-        }
-
-        .btn-pass { background: var(--vivid-orange); }
-        .btn-correct { background: var(--vivid-green); }
-        .btn-pause { background: var(--royal-blue); }
-        .btn:active { transform: translateY(4px); box-shadow: 0 4px 0 rgba(0,0,0,0.3); }
-
-        /* --- TEACHER SETTINGS --- */
-        textarea {
+        .review-table {
             width: 100%;
-            height: 100px;
-            margin: 15px 0;
-            border-radius: 10px;
+            border-collapse: collapse;
+        }
+        .review-table th, .review-table td {
+            text-align: left;
             padding: 10px;
-            font-size: 1rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
         }
 
-        .hidden { display: none; }
+        .correct-word { color: var(--green-correct); text-transform: uppercase; }
+        .passed-word { color: var(--orange-pass); text-transform: uppercase; }
 
-        /* --- REVIEW TABLE --- */
-        #reviewScreen {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.95);
-            z-index: 20;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 40px;
+        /* 2. Warning System (Flashes/Shake) */
+        @keyframes subtle-flash {
+            0% { border-color: transparent; }
+            50% { border-color: var(--vivid-red); }
+            100% { border-color: transparent; }
         }
 
-        table { width: 100%; max-width: 600px; border-collapse: collapse; margin-top: 20px; }
-        th, td { padding: 15px; border: 1px solid #444; text-align: left; }
-        .row-correct { background-color: rgba(0, 166, 81, 0.3); }
-        .row-passed { background-color: rgba(255, 153, 0, 0.3); }
+        @keyframes subtle-shake {
+            0% { transform: translateX(0px); }
+            25% { transform: translateX(3px); }
+            75% { transform: translateX(-3px); }
+            100% { transform: translateX(0px); }
+        }
+
+        .critical-warning {
+            animation: subtle-flash 0.5s infinite;
+        }
+
+        .shake-timer {
+            animation: subtle-shake 0.1s 10 ease-in-out;
+        }
+
+        /* Float shapes background animation */
+        #shapes-bg {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .shape {
+            position: absolute;
+            background-color: rgba(255, 255, 255, 0.03);
+            border-radius: 5px;
+            opacity: 0.5;
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 600px) {
+            .game-title { font-size: 3rem; }
+            #current-word { font-size: 3.5rem; }
+            .control-btn { font-size: 1rem; padding: 15px; }
+            #timer { font-size: 3rem; }
+        }
     </style>
 </head>
 <body>
 
-    <div id="titlePage">
-        <div class="menu-card">
-            <h1 style="color:var(--gold); margin-bottom:10px;">Teacher Dashboard</h1>
-            <select id="levelSelect" style="padding:10px; width:100%; margin-bottom:10px;">
-                <option value="easy">Level 1: Easy (Nouns)</option>
-                <option value="medium">Level 2: Medium (Actions/Jobs)</option>
-                <option value="hard">Level 3: Hard (Feelings/Places)</option>
-            </select>
-            <textarea id="customInput" placeholder="Paste custom words here (comma separated)..."></textarea>
-            <button class="btn btn-correct" style="width:100%" onclick="startGame()">START LESSON</button>
-        </div>
-    </div>
-
-    <div id="gameBoard">
-        <div class="border-trim top-trim"></div>
-        <div id="particles"></div>
+    <div id="game-container">
         
-        <div class="content">
-            <div id="timer">02:00</div>
-            <div id="wordDisplay">READY?</div>
-            
-            <div class="controls">
-                <button class="btn btn-pass" onclick="handlePass()">PASS</button>
-                <button class="btn btn-correct" onclick="handleCorrect()">CORRECT</button>
-                <button class="btn btn-pause" id="pauseBtn" onclick="togglePause()">PAUSE</button>
+        <div id="shapes-bg"></div>
+
+        <div id="start-screen" class="game-state active-state">
+            <h1 class="game-title">PINOY HENYO</h1>
+            <p class="game-subtitle">How many words can you guess?</p>
+            <button id="start-button">Start Game</button>
+            <div class="input-group">
+                <p>Paste Custom Words (comma separated, Optional):</p>
+                <textarea id="word-list-input" placeholder="Object: Car, Animal: Dog, Food: Pizza..."></textarea>
             </div>
         </div>
 
-        <div class="border-trim bottom-trim"></div>
-    </div>
+        <div id="game-loop" class="game-state">
+            
+            <div class="top-ui">
+                <div id="timer">120</div>
+                <div id="category-label">CATEGORY</div>
+            </div>
 
-    <div id="reviewScreen">
-        <h1 style="color:var(--gold);">Review Time!</h1>
-        <div style="overflow-y: auto; width:100%; display:flex; justify-content:center;">
-            <table id="reviewTable">
-                <thead><tr><th>Word</th><th>Result</th></tr></thead>
-                <tbody id="reviewBody"></tbody>
-            </table>
+            <div class="word-display-container">
+                <h2 id="current-word">WORD</h2>
+            </div>
+
+            <div class="controls-ui">
+                <button id="btn-pass" class="control-btn">PASS (Orange)</button>
+                <button id="btn-correct" class="control-btn">CORRECT (Green)</button>
+                <button id="btn-pause" class="control-btn">PAUSE (Blue)</button>
+            </div>
+
+            <div id="pause-overlay">
+                <h1>Paused</h1>
+                <p>Tap to Resume</p>
+            </div>
         </div>
-        <button class="btn btn-correct" style="margin-top:20px;" onclick="location.reload()">RESTART</button>
+
+        <div id="review-screen" class="game-state">
+            <h1>Game Over</h1>
+            <p id="first-guess-timestamp"></p>
+            <div class="review-table-container">
+                <table class="review-table">
+                    <thead>
+                        <tr><th>Word</th><th>Result</th></tr>
+                    </thead>
+                    <tbody id="review-body">
+                        </tbody>
+                </table>
+            </div>
+            <button id="restart-button">Play Again</button>
+        </div>
+
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <script>
-        const levels = {
-            easy: ['Pencil', 'Elephant', 'Sandwich', 'Backpack', 'Umbrella', 'Banana', 'Pizza'],
-            medium: ['Spain', 'Flight Attendant', 'Cooking', 'Market', 'Dentist', 'Dancing', 'Hospital'],
-            hard: ['Wedding', 'Nervous', 'Japan', 'Nostalgia', 'Frustrated', 'Graduation', 'Bored']
+        /* -----------------------------------------------------------
+           Gameplay Logic & Core Features (JS)
+        ----------------------------------------------------------- */
+        
+        const config = {
+            gameDuration: 120, // 2 minutes (120s)
+            criticalTime: 10,  // Flashing start
+            // Built-in Word List
+            // 4. Level System
+            levels: {
+                easy:   [{ word: 'CAR', cat: 'Object' }, { word: 'DOG', cat: 'Animal' }, { word: 'PIZZA', cat: 'Food' }],
+                medium: [{ word: 'RUN', cat: 'Action' }, { word: 'PARK', cat: 'Place' }, { word: 'DOCTOR', cat: 'Job' }],
+                hard:   [{ word: 'HAPPY', cat: 'Feeling' }, { word: 'PHILIPPINES', cat: 'Country' }, { word: 'BIRTHDAY', cat: 'Event' }]
+            }
         };
 
-        let words = [];
-        let history = [];
-        let score = 0;
-        let timeLeft = 120;
-        let timer = null;
-        let paused = false;
+        let gameState = {
+            timer: 0,
+            interval: null,
+            paused: false,
+            currentWordIndex: 0,
+            activeWords: [],
+            guessedWords: [],
+            passedWords: [],
+            firstCorrectGuessTime: null
+        };
 
-        // Audio Placeholders
-        const sndCorrect = new Audio('correct.mp3');
-        const sndPass = new Audio('pass.mp3');
-        const sndMusic = new Audio('gamemusic1.mp3');
-        const sndTimer = new Audio('timer.mp3');
-        sndMusic.loop = true;
+        // UI Elements
+        const elContainer = document.getElementById('game-container');
+        const screens = {
+            start: document.getElementById('start-screen'),
+            game: document.getElementById('game-loop'),
+            review: document.getElementById('review-screen')
+        };
+        const elTimer = document.getElementById('timer');
+        const elCategory = document.getElementById('category-label');
+        const elWord = document.getElementById('current-word');
+        const elReviewBody = document.getElementById('review-body');
+        const elTimestamp = document.getElementById('first-guess-timestamp');
+        const elPauseOverlay = document.getElementById('pause-overlay');
 
-        // Create Floating Suns
-        const particleContainer = document.getElementById('particles');
-        for (let i = 0; i < 15; i++) {
-            const sun = document.createElement('div');
-            sun.className = 'sun-particle';
-            sun.innerHTML = '☀';
-            sun.style.left = Math.random() * 100 + 'vw';
-            sun.style.animationDuration = (Math.random() * 10 + 10) + 's';
-            sun.style.animationDelay = (Math.random() * 10) + 's';
-            particleContainer.appendChild(sun);
+        // Audio Placeholders (source manually if needed)
+        // 5. Audio Integration (with currentTime=0 for snappy playback)
+        const sounds = {
+            correct: new Audio('correct.mp3'),
+            pass: new Audio('pass.mp3'),
+            music: new Audio('gamemusic1.mp3'),
+            timerWarning: new Audio('timer.mp3') // plays at 10s
+        };
+
+        // --- Initialization ---
+        function init() {
+            setupButtons();
+            setupBackground();
         }
 
+        // --- Core Game Flow ---
         function startGame() {
-            const custom = document.getElementById('customInput').value;
-            if (custom.trim()) {
-                words = custom.split(',').map(s => s.trim());
+            // Setup Words
+            // 4. Custom Input handling
+            const customInput = document.getElementById('word-list-input').value;
+            if (customInput.trim() !== '') {
+                gameState.activeWords = parseCustomWords(customInput);
             } else {
-                words = [...levels[document.getElementById('levelSelect').value]];
+                gameState.activeWords = [...config.levels.easy, ...config.levels.medium, ...config.levels.hard];
             }
-            words.sort(() => Math.random() - 0.5);
-
-            document.getElementById('titlePage').classList.add('hidden');
-            document.getElementById('gameBoard').style.display = 'block';
             
-            sndMusic.play().catch(e => console.log("Audio waiting for interaction"));
-            nextWord();
-            startTimer();
-        }
+            // Shuffle
+            gameState.activeWords = shuffleArray(gameState.activeWords);
 
-        function startTimer() {
-            timer = setInterval(() => {
-                if (!paused) {
-                    timeLeft--;
-                    updateTimerUI();
-                    if (timeLeft === 10) {
-                        document.getElementById('timer').classList.add('panic');
-                        sndTimer.play();
-                    }
-                    if (timeLeft <= 0) endGame();
-                }
-            }, 1000);
-        }
+            // Reset State
+            gameState.timer = config.gameDuration;
+            gameState.currentWordIndex = 0;
+            gameState.guessedWords = [];
+            gameState.passedWords = [];
+            gameState.firstCorrectGuessTime = null;
+            elContainer.classList.remove('critical-warning');
+            elTimer.classList.remove('shake-timer');
 
-        function updateTimerUI() {
-            const m = Math.floor(timeLeft / 60);
-            const s = timeLeft % 60;
-            document.getElementById('timer').innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-        }
-
-        function nextWord() {
-            if (words.length === 0) return endGame();
-            const word = words.pop();
-            const display = document.getElementById('wordDisplay');
-            display.innerText = word;
+            // Switch Screen
+            switchScreen('game');
+            loadNextWord();
             
-            // Re-trigger animation
-            display.style.animation = 'none';
-            display.offsetHeight;
-            display.style.animation = null;
-        }
-
-        function handleCorrect() {
-            if (paused) return;
-            history.push({ word: document.getElementById('wordDisplay').innerText, status: 'Correct' });
-            score++;
-            sndCorrect.currentTime = 0;
-            sndCorrect.play();
+            // Start Timer
+            gameState.interval = setInterval(updateTimer, 1000);
+            updateTimerDisplay(); // Initial draw
             
-            confetti({
-                particleCount: 150,
-                spread: 70,
-                origin: { y: 0.6 },
-                colors: ['#0047ab', '#fcd116', '#ffffff']
-            });
-            nextWord();
-        }
-
-        function handlePass() {
-            if (paused) return;
-            history.push({ word: document.getElementById('wordDisplay').innerText, status: 'Passed' });
-            sndPass.currentTime = 0;
-            sndPass.play();
-            nextWord();
-        }
-
-        function togglePause() {
-            paused = !paused;
-            document.getElementById('pauseBtn').innerText = paused ? "RESUME" : "PAUSE";
-            document.getElementById('wordDisplay').style.visibility = paused ? 'hidden' : 'visible';
+            // Sounds
+            playSound('music');
         }
 
         function endGame() {
-            clearInterval(timer);
-            sndMusic.pause();
-            document.getElementById('gameBoard').style.display = 'none';
-            document.getElementById('reviewScreen').style.display = 'flex';
+            clearInterval(gameState.interval);
+            switchScreen('review');
+            generateReviewTable();
+            if (gameState.firstCorrectGuessTime) {
+                elTimestamp.innerText = `First word guessed at: ${gameState.firstCorrectGuessTime}s remaining.`;
+            } else {
+                elTimestamp.innerText = `No words guessed correctly.`;
+            }
+            sounds.music.pause();
+        }
+
+        // --- Timer Logic ---
+        function updateTimer() {
+            if (gameState.paused) return;
+
+            gameState.timer--;
+            updateTimerDisplay();
+
+            // 2. Warning System (10 seconds)
+            if (gameState.timer === config.criticalTime) {
+                elContainer.classList.add('critical-warning');
+                elTimer.classList.add('shake-timer');
+                playSound('timerWarning');
+            }
+
+            if (gameState.timer <= 0) {
+                endGame();
+            }
+        }
+
+        function updateTimerDisplay() {
+            elTimer.innerText = gameState.timer;
+        }
+
+        // --- Word Management ---
+        function loadNextWord() {
+            if (gameState.currentWordIndex >= gameState.activeWords.length) {
+                endGame();
+                return;
+            }
+
+            const newWordData = gameState.activeWords[gameState.currentWordIndex];
             
-            const tbody = document.getElementById('reviewBody');
-            history.forEach(item => {
-                const row = ` <tr class="${item.status === 'Correct' ? 'row-correct' : 'row-passed'}">
-                    <td>${item.word}</td><td>${item.status}</td>
-                </tr>`;
-                tbody.innerHTML += row;
+            // UI Update
+            elWord.innerText = newWordData.word;
+            elCategory.innerText = newWordData.cat;
+
+            // 2. Word Transition: Scale Up animation
+            elWord.style.transform = 'scale(0.5)';
+            elWord.style.opacity = '0';
+            requestAnimationFrame(() => {
+                elWord.style.transition = 'transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s';
+                elWord.style.transform = 'scale(1)';
+                elWord.style.opacity = '1';
+            });
+            // Cleanup animation after it plays
+            setTimeout(() => elWord.style.transition = '', 300);
+        }
+
+        // --- Game Actions ---
+        function handlePass() {
+            if (gameState.paused) return;
+            playSound('pass');
+            const currentWord = gameState.activeWords[gameState.currentWordIndex];
+            gameState.passedWords.push(currentWord);
+            gameState.currentWordIndex++;
+            loadNextWord();
+        }
+
+        function handleCorrect() {
+            if (gameState.paused) return;
+            playSound('correct');
+            
+            // 2. Victory Effects: Multi-directional burst of gold and blue
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: ['#0047AB', '#FFD700'] // blue and gold
+            });
+
+            // Post-Game Review: Tracking data
+            const currentWord = gameState.activeWords[gameState.currentWordIndex];
+            gameState.guessedWords.push(currentWord);
+
+            // Post-Game Review: Track first guess time
+            if (gameState.firstCorrectGuessTime === null) {
+                gameState.firstCorrectGuessTime = gameState.timer;
+            }
+
+            gameState.currentWordIndex++;
+            loadNextWord();
+        }
+
+        function handlePause() {
+            gameState.paused = !gameState.paused;
+            if (gameState.paused) {
+                sounds.music.pause();
+                elPauseOverlay.style.display = 'flex';
+            } else {
+                playSound('music');
+                elPauseOverlay.style.display = 'none';
+            }
+        }
+
+        // --- Post-Game Review Screen ---
+        // 4. Review Screen: generate modern table
+        function generateReviewTable() {
+            elReviewBody.innerHTML = ''; // clear
+
+            // Modern sorting: show correct first
+            const combined = [
+                ...gameState.guessedWords.map(w => ({...w, status: 'guessed'})),
+                ...gameState.passedWords.map(w => ({...w, status: 'passed'}))
+            ];
+
+            combined.forEach(item => {
+                const row = document.createElement('tr');
+                
+                const cellWord = document.createElement('td');
+                cellWord.innerText = item.word;
+                if(item.status === 'guessed') cellWord.classList.add('correct-word');
+                row.appendChild(cellWord);
+
+                const cellStatus = document.createElement('td');
+                cellStatus.innerText = item.status === 'guessed' ? 'Guessed (Green)' : 'Passed (Orange)';
+                if(item.status === 'passed') cellStatus.classList.add('passed-word');
+                row.appendChild(cellStatus);
+
+                elReviewBody.appendChild(row);
             });
         }
+
+        // --- Helper: Switch Screens ---
+        function switchScreen(activeKey) {
+            Object.keys(screens).forEach(key => {
+                screens[key].classList.remove('active-state');
+            });
+            screens[activeKey].classList.add('active-state');
+        }
+
+        // --- Helper: Shuffle Array ---
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // --- Helper: Parse Custom Words ---
+        function parseCustomWords(input) {
+            // Expected format: Category: Word, Category: Word
+            return input.split(',').map(pair => {
+                const parts = pair.split(':');
+                if (parts.length === 2) {
+                    return { cat: parts[0].trim(), word: parts[1].trim() };
+                } else {
+                    return { cat: 'CUSTOM', word: pair.trim() }; // fallback
+                }
+            });
+        }
+
+        // --- Helper: Play Audio snappy ---
+        // 5. Audio Integration: currentTime = 0
+        function playSound(soundId) {
+            const sound = sounds[soundId];
+            if (sound && sound.readyState >= 2) {
+                sound.currentTime = 0; // Snap!
+                sound.play().catch(() => { /* ignore play errors, common in browsers */ });
+            }
+        }
+
+        // --- Setup Buttons & Interactions ---
+        function setupButtons() {
+            document.getElementById('start-button').addEventListener('click', startGame);
+            document.getElementById('restart-button').addEventListener('click', () => switchScreen('start'));
+            document.getElementById('btn-pass').addEventListener('click', handlePass);
+            document.getElementById('btn-correct').addEventListener('click', handleCorrect);
+            document.getElementById('btn-pause').addEventListener('click', handlePause);
+            document.getElementById('pause-overlay').addEventListener('click', handlePause);
+        }
+
+        // --- 1. Visual Identity: Float shapes background animation ---
+        function setupBackground() {
+            const shapesContainer = document.getElementById('shapes-bg');
+            for (let i = 0; i < 20; i++) {
+                const shape = document.createElement('div');
+                shape.classList.add('shape');
+                
+                const size = Math.random() * 50 + 20; // 20-70px
+                shape.style.width = `${size}px`;
+                shape.style.height = `${size}px`;
+                shape.style.left = `${Math.random() * 100}vw`;
+                shape.style.top = `${Math.random() * 100}vh`;
+
+                // Minimal slow movement
+                shape.style.transition = 'all 20s linear';
+                
+                shapesContainer.appendChild(shape);
+
+                // Start movement loop
+                moveShape(shape);
+            }
+        }
+
+        function moveShape(shape) {
+            setInterval(() => {
+                const newX = Math.random() * 100;
+                const newY = Math.random() * 100;
+                shape.style.left = `${newX}vw`;
+                shape.style.top = `${newY}vh`;
+            }, 20000); // long interval for slow move
+        }
+
+        init();
+
     </script>
 </body>
 </html>
