@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pinoy Henyo ESL Game</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    overflow:hidden;
+    font-family:Arial, sans-serif;
+    background:#111;
+}
+
+/* ================= TITLE PAGE ================= */
+
+#titlePage{
+
+    position:absolute;
+
+    inset:0;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:center;
+
+    align-items:center;
+
+    text-align:center;
+
+    overflow:hidden;
+
+    background:
+    radial-gradient(circle at top left,#fcd11622 0%,transparent 30%),
+    radial-gradient(circle at bottom right,#c8102e33 0%,transparent 30%),
+    linear-gradient(135deg,#0047ab,#001d4d,#111);
+}
+
+/* Background Glow */
+
+#titlePage::before{
+
+    content:"";
+
+    position:absolute;
+
+    width:700px;
+
+    height:700px;
+
+    border-radius:50%;
+
+    background:rgba(255,255,0,.08);
+
+    filter:blur(70px);
+
+    animation:glow 5s ease-in-out infinite;
+}
+
+@keyframes glow{
+
+    0%{
+        transform:scale(1);
+    }
+
+    50%{
+        transform:scale(1.15);
+    }
+
+    100%{
+        transform:scale(1);
+    }
+}
+
+/* ================= PHILIPPINE FLAG ================= */
+
+.flagContainer{
+
+    position:relative;
+
+    z-index:2;
+
+    margin-bottom:25px;
+}
+
+.flag{
+
+    position:relative;
+
+    width:220px;
+
+    height:120px;
+
+    border-radius:12px;
+
+    overflow:hidden;
+
+    box-shadow:
+    0 10px 25px rgba(0,0,0,.45);
+
+    animation:floatFlag 2s ease-in-out infinite;
+}
+
+@keyframes floatFlag{
+
+    0%{
+        transform:translateY(0px);
+    }
+
+    50%{
+        transform:translateY(-8px);
+    }
+
+    100%{
+        transform:translateY(0px);
+    }
+}
+
+.bluePart{
+
+    position:absolute;
+
+    top:0;
+
+    right:0;
+
+    width:100%;
+
+    height:50%;
+
+    background:#0038a8;
+}
+
+.redPart{
+
+    position:absolute;
+
+    bottom:0;
+
+    right:0;
+
+    width:100%;
+
+    height:50%;
+
+    background:#ce1126;
+}
+
+.whiteTriangle{
+
+    position:absolute;
+
+    left:0;
+
+    top:0;
+
+    width:0;
+
+    height:0;
+
+    border-top:60px solid transparent;
+
+    border-bottom:60px solid transparent;
+
+    border-left:120px solid white;
+
+    z-index:2;
+}
+
+.sun{
+
+    position:absolute;
+
+    left:18px;
+
+    top:35px;
+
+    z-index:3;
+
+    font-size:38px;
+
+    color:#fcd116;
+}
+
+/* ================= BRAIN ================= */
+
+.brainSticker{
+
+    position:relative;
+
+    z-index:2;
+
+    font-size:70px;
+
+    margin-bottom:15px;
+
+    animation:bounceBrain 2s infinite;
+}
+
+@keyframes bounceBrain{
+
+    0%{
+        transform:translateY(0);
+    }
+
+    50%{
+        transform:translateY(-10px);
+    }
+
+    100%{
+        transform:translateY(0);
+    }
+}
+
+/* ================= TITLE ================= */
+
+#gameTitle{
+
+    position:relative;
+
+    z-index:2;
+
+    font-family:"Ravie", cursive;
+
+    font-size:100px;
+
+    color:#fff200;
+
+    letter-spacing:3px;
+
+    margin-bottom:25px;
+
+    text-shadow:
+    4px 4px 0 #ff8800,
+    8px 8px 0 #c8102e,
+    12px 12px 0 #002868,
+    15px 15px 20px rgba(0,0,0,.5);
+}
+
+/* ================= SUBTITLE ================= */
+
+.subtitle{
+
+    position:relative;
+
+    z-index:2;
+
+    font-size:34px;
+
+    font-weight:bold;
+
+    color:white;
+
+    margin-bottom:45px;
+
+    text-shadow:3px 3px 8px rgba(0,0,0,.5);
+}
+
+/* ================= START BUTTON ================= */
+
+#startBtn{
+
+    position:relative;
+
+    z-index:2;
+
+    padding:22px 60px;
+
+    font-size:34px;
+
+    font-weight:bold;
+
+    border:none;
+
+    border-radius:18px;
+
+    cursor:pointer;
+
+    color:white;
+
+    background:linear-gradient(to bottom,#00b050,#00863c);
+
+    box-shadow:
+    0 8px 0 #0a6d3c,
+    0 12px 20px rgba(0,0,0,.4);
+
+    transition:.2s;
+}
+
+#startBtn:hover{
+
+    transform:scale(1.06);
+}
+
+#startBtn:active{
+
+    transform:translateY(4px);
+
+    box-shadow:
+    0 4px 0 #0a6d3c;
+}
+
+/* ================= GAME PAGE ================= */
+
+#gamePage{
+
+    display:none;
+
+    position:absolute;
+
+    inset:0;
+
+    background:
+    linear-gradient(rgba(0,0,0,.2),rgba(0,0,0,.2)),
+    linear-gradient(135deg,#003c8f,#101010);
+}
+
+/* Top Bar */
+
+.topBar{
+
+    width:100%;
+
+    background:#111;
+
+    padding:15px 30px;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    border-bottom:5px solid #fcd116;
+}
+
+#category{
+
+    font-size:34px;
+
+    font-weight:bold;
+
+    color:#fff200;
+
+    font-family:"Berlin Sans FB Demi", sans-serif;
+}
+
+#timer{
+
+    font-size:44px;
+
+    font-weight:bold;
+
+    color:#ff3131;
+
+    font-family:"Berlin Sans FB Demi", sans-serif;
+}
+
+/* Word Area */
+
+.wordContainer{
+
+    position:relative;
+
+    width:100%;
+
+    height:60vh;
+
+    overflow:hidden;
+
+    display:flex;
+
+    align-items:center;
+}
+
+#movingWord{
+
+    position:absolute;
+
+    white-space:nowrap;
+
+    font-size:150px;
+
+    font-family:"Berlin Sans FB Demi", sans-serif;
+
+    font-weight:bold;
+
+    color:white;
+
+    text-shadow:
+    5px 5px 0 #c8102e,
+    10px 10px 0 #002868;
+
+    animation:moveWord 12s linear infinite;
+}
+
+@keyframes moveWord{
+
+    from{
+        transform:translateX(120vw);
+    }
+
+    to{
+        transform:translateX(-150%);
+    }
+}
+
+/* Buttons */
+
+.controls{
+
+    position:absolute;
+
+    bottom:45px;
+
+    width:100%;
+
+    display:flex;
+
+    justify-content:center;
+
+    gap:30px;
+}
+
+.gameBtn{
+
+    padding:20px 42px;
+
+    font-size:30px;
+
+    font-weight:bold;
+
+    border:none;
+
+    border-radius:18px;
+
+    cursor:pointer;
+
+    color:white;
+
+    transition:.2s;
+}
+
+.gameBtn:hover{
+
+    transform:scale(1.05);
+}
+
+.pauseBtn{
+
+    background:#ff9900;
+
+    box-shadow:0 7px 0 #c77400;
+}
+
+.correctBtn{
+
+    background:#00a651;
+
+    box-shadow:0 7px 0 #0a6d3c;
+}
+
+.passBtn{
+
+    background:#c8102e;
+
+    box-shadow:0 7px 0 #7e0d1f;
+}
+
+/* ================= END SCREEN ================= */
+
+#endScreen{
+
+    display:none;
+
+    position:absolute;
+
+    inset:0;
+
+    background:rgba(0,0,0,.92);
+
+    justify-content:center;
+
+    align-items:center;
+
+    flex-direction:column;
+
+    text-align:center;
+
+    color:white;
+}
+
+#endScreen h1{
+
+    font-size:80px;
+
+    color:#fff200;
+
+    margin-bottom:25px;
+
+    text-shadow:4px 4px 0 #c8102e;
+}
+
+#scoreText{
+
+    font-size:45px;
+
+    margin-bottom:35px;
+}
+
+#restartBtn{
+
+    padding:20px 50px;
+
+    font-size:32px;
+
+    font-weight:bold;
+
+    border:none;
+
+    border-radius:16px;
+
+    cursor:pointer;
+
+    color:white;
+
+    background:#00a651;
+
+    box-shadow:0 7px 0 #0a6d3c;
+}
+
+#restartBtn:hover{
+
+    transform:scale(1.05);
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- ================= TITLE PAGE ================= -->
+
+<div id="titlePage">
+
+    <!-- Philippine Flag -->
+
+    <div class="flagContainer">
+
+        <div class="flag">
+
+            <div class="bluePart"></div>
+
+            <div class="redPart"></div>
+
+            <div class="whiteTriangle"></div>
+
+            <div class="sun">☀</div>
+
+        </div>
+
+    </div>
+
+    <!-- Brain -->
+
+    <div class="brainSticker">
+        🧠
+    </div>
+
+    <!-- Title -->
+
+    <div id="gameTitle">
+        PINOY HENYO
+    </div>
+
+    <!-- Subtitle -->
+
+    <div class="subtitle">
+        HOW MANY WORDS CAN YOU GUESS?
+    </div>
+
+    <!-- Start Button -->
+
+    <button id="startBtn">
+        START GAME
+    </button>
+
+</div>
+
+<!-- ================= GAME PAGE ================= -->
+
+<div id="gamePage">
+
+    <div class="topBar">
+
+        <div id="category">
+            CATEGORY
+        </div>
+
+        <div id="timer">
+            02:00
+        </div>
+
+    </div>
+
+    <div class="wordContainer">
+
+        <div id="movingWord">
+            WORD
+        </div>
+
+    </div>
+
+    <div class="controls">
+
+        <button class="gameBtn pauseBtn" id="pauseBtn">
+            PAUSE
+        </button>
+
+        <button class="gameBtn correctBtn" id="correctBtn">
+            CORRECT
+        </button>
+
+        <button class="gameBtn passBtn" id="passBtn">
+            PASS
+        </button>
+
+    </div>
+
+</div>
+
+<!-- ================= END SCREEN ================= -->
+
+<div id="endScreen">
+
+    <h1>TIME'S UP!</h1>
+
+    <div id="scoreText">
+        SCORE: 0
+    </div>
+
+    <button id="restartBtn">
+        PLAY AGAIN
+    </button>
+
+</div>
+
+<script>
+
+/* ================= WORD LIST ================= */
+
+const words = [
+
+{word:"PINEAPPLE", category:"FOOD"},
+{word:"NURSE", category:"JOBS"},
+{word:"SINGAPORE", category:"PLACES"},
+{word:"POLICEMAN", category:"JOBS"},
+{word:"WRITE", category:"ACTIONS"},
+{word:"SNAKE", category:"ANIMALS"},
+{word:"PENCIL", category:"OBJECTS"},
+{word:"HOSPITAL", category:"PLACES"},
+{word:"MARKET", category:"PLACES"},
+{word:"PILLOW", category:"OBJECTS"},
+{word:"SPEAK", category:"ACTIONS"},
+{word:"DUCK", category:"ANIMALS"},
+{word:"CUCUMBER", category:"FOOD"},
+{word:"ELEPHANT", category:"ANIMALS"},
+{word:"NOTEBOOK", category:"OBJECTS"},
+{word:"CASHIER", category:"JOBS"},
+{word:"ICE CREAM", category:"FOOD"},
+{word:"CHEF", category:"JOBS"},
+{word:"JAPAN", category:"PLACES"},
+{word:"READ", category:"ACTIONS"},
+{word:"SPELL", category:"ACTIONS"},
+{word:"PARK", category:"PLACES"},
+{word:"GYM", category:"PLACES"},
+{word:"DOCTOR", category:"JOBS"}
+
+];
+
+/* ================= ELEMENTS ================= */
+
+const titlePage = document.getElementById("titlePage");
+const gamePage = document.getElementById("gamePage");
+const movingWord = document.getElementById("movingWord");
+const categoryText = document.getElementById("category");
+const timerText = document.getElementById("timer");
+
+const startBtn = document.getElementById("startBtn");
+const correctBtn = document.getElementById("correctBtn");
+const passBtn = document.getElementById("passBtn");
+const pauseBtn = document.getElementById("pauseBtn");
+
+const endScreen = document.getElementById("endScreen");
+const scoreText = document.getElementById("scoreText");
+const restartBtn = document.getElementById("restartBtn");
+
+/* ================= GAME VARIABLES ================= */
+
+let shuffledWords = [];
+let currentIndex = 0;
+let score = 0;
+let timeLeft = 120;
+let paused = false;
+let timer;
+
+/* ================= FUNCTIONS ================= */
+
+function shuffle(array){
+
+    for(let i = array.length - 1; i > 0; i--){
+
+        const j = Math.floor(Math.random() * (i + 1));
+
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+
+    return array;
+}
+
+function showWord(){
+
+    if(currentIndex >= shuffledWords.length){
+
+        currentIndex = 0;
+    }
+
+    const current = shuffledWords[currentIndex];
+
+    movingWord.textContent = current.word;
+
+    categoryText.textContent = "CATEGORY: " + current.category;
+
+    movingWord.style.animation = "none";
+
+    void movingWord.offsetWidth;
+
+    movingWord.style.animation = "moveWord 12s linear infinite";
+
+    if(paused){
+
+        movingWord.style.animationPlayState = "paused";
+    }
+}
+
+function nextWord(){
+
+    currentIndex++;
+
+    showWord();
+}
+
+function updateTimer(){
+
+    let minutes = Math.floor(timeLeft / 60);
+
+    let seconds = timeLeft % 60;
+
+    minutes = String(minutes).padStart(2,"0");
+
+    seconds = String(seconds).padStart(2,"0");
+
+    timerText.textContent = `${minutes}:${seconds}`;
+}
+
+function startGame(){
+
+    titlePage.style.display = "none";
+
+    endScreen.style.display = "none";
+
+    gamePage.style.display = "block";
+
+    shuffledWords = shuffle([...words]);
+
+    currentIndex = 0;
+
+    score = 0;
+
+    timeLeft = 120;
+
+    paused = false;
+
+    pauseBtn.textContent = "PAUSE";
+
+    showWord();
+
+    updateTimer();
+
+    clearInterval(timer);
+
+    timer = setInterval(()=>{
+
+        if(!paused){
+
+            timeLeft--;
+
+            updateTimer();
+
+            if(timeLeft <= 0){
+
+                endGame();
+            }
+        }
+
+    },1000);
+}
+
+function endGame(){
+
+    clearInterval(timer);
+
+    gamePage.style.display = "none";
+
+    endScreen.style.display = "flex";
+
+    scoreText.textContent = "SCORE: " + score;
+}
+
+/* ================= BUTTON EVENTS ================= */
+
+startBtn.addEventListener("click", startGame);
+
+correctBtn.addEventListener("click", ()=>{
+
+    score++;
+
+    nextWord();
+});
+
+passBtn.addEventListener("click", ()=>{
+
+    nextWord();
+});
+
+pauseBtn.addEventListener("click", ()=>{
+
+    paused = !paused;
+
+    if(paused){
+
+        movingWord.style.animationPlayState = "paused";
+
+        pauseBtn.textContent = "RESUME";
+
+    }else{
+
+        movingWord.style.animationPlayState = "running";
+
+        pauseBtn.textContent = "PAUSE";
+    }
+});
+
+restartBtn.addEventListener("click", startGame);
+
+</script>
+
+</body>
+</html>
