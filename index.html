@@ -652,15 +652,66 @@ function buildWordList() {
     const customText = customWordsBox.value.trim();
 
     if (customText !== "") {
-        const words = customText
-            .split(",")
-            .map(w => w.trim())
-            .filter(w => w !== "");
 
-        activeWords = words.map(word => ({
-            word: word.toUpperCase(),
-            category: "Custom"
-        }));
+        activeWords = [];
+
+        /* Split by new lines first */
+        const lines = customText
+            .split("\n")
+            .map(line => line.trim())
+            .filter(line => line !== "");
+
+        lines.forEach(line => {
+
+            /* FORMAT 1:
+               cat | Animal
+            */
+            if (line.includes("|")) {
+
+                const parts = line
+                    .split("|")
+                    .map(p => p.trim());
+
+                const word = parts[0];
+                const category =
+                    parts[1] || "Custom";
+
+                if (word !== "") {
+                    activeWords.push({
+                        word: word.toUpperCase(),
+                        category: category
+                    });
+                }
+            }
+
+            /* FORMAT 2:
+               cat, dog, banana
+            */
+            else if (line.includes(",")) {
+
+                const words = line
+                    .split(",")
+                    .map(w => w.trim())
+                    .filter(w => w !== "");
+
+                words.forEach(word => {
+                    activeWords.push({
+                        word: word.toUpperCase(),
+                        category: "Custom"
+                    });
+                });
+            }
+
+            /* FORMAT 3:
+               single word only
+            */
+            else {
+                activeWords.push({
+                    word: line.toUpperCase(),
+                    category: "Custom"
+                });
+            }
+        });
 
     } else {
         activeWords = [...wordBank[selectedDifficulty]];
@@ -668,7 +719,6 @@ function buildWordList() {
 
     shuffleArray(activeWords);
 }
-
 
 /* ================================= */
 /* SHOW NEXT WORD */
