@@ -1,650 +1,598 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PINOY HENYO</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
-    <style>
-        /* -----------------------------------------------------------
-           Visual Identity (CSS)
-        ----------------------------------------------------------- */
-        :root {
-            /* 1. Color Palette */
-            --primary-blue: #0047AB; /* Royal Blue */
-            --bright-gold: #FFD700; /* Bright Gold */
-            --vivid-red: #FF0000;   /* Vivid Red */
-            --orange-pass: #FF8C00;
-            --green-correct: #32CD32;
-            --black-bg: #0A0A12;
-            --navy-bg: #001F5B;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pinoy Henyo</title>
 
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 700;
-            color: white;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-            background-color: var(--black-bg);
-            -webkit-user-select: none;
-            user-select: none;
-        }
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700;900&display=swap" rel="stylesheet">
+let currentIndex = 0;
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
 
-        /* Background: Dynamic animated background with floating translucent shapes */
-        #game-container {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            background: linear-gradient(180deg, var(--black-bg) 0%, var(--navy-bg) 100%);
-            border: 5px solid transparent;
-            transition: border-color 0.1s ease-out;
-            box-sizing: border-box;
-        }
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Montserrat',sans-serif;
+}
 
-        /* 3. State Management (Hidden states) */
-        .game-state { display: none; }
-        .active-state { display: flex; }
+body{
+    background:linear-gradient(135deg,#061a40,#000814);
+    color:white;
+    height:100vh;
+    overflow:hidden;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
 
-        /* --- Start Screen --- */
-        #start-screen {
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-            text-align: center;
-            gap: 20px;
-        }
+.hidden{
+    display:none!important;
+}
 
-        /* Branding & Header */
-        .game-title {
-            font-size: 5rem;
-            font-weight: 900;
-            text-transform: uppercase;
-            color: var(--bright-gold);
-            margin: 0;
-            text-shadow: 0 0 15px var(--bright-gold);
-        }
+/* BACKGROUND */
 
-        .game-subtitle {
-            font-size: 1.5rem;
-            color: white;
-            opacity: 0.8;
-            margin: 0 0 40px 0;
-        }
+#bg{
+    position:fixed;
+    inset:0;
+    overflow:hidden;
+    z-index:-1;
+}
 
-        #start-button {
-            background-color: var(--primary-blue);
-            color: white;
-            border: none;
-            padding: 15px 40px;
-            font-size: 1.5rem;
-            border-radius: 50px;
-            cursor: pointer;
-            text-transform: uppercase;
-            font-weight: 900;
-            transition: background 0.2s;
-        }
-        #start-button:hover { background-color: #0056D6; }
+.shape{
+    position:absolute;
+    background:rgba(255,255,255,.06);
+    animation:float 25s linear infinite;
+}
 
-        /* Custom Input */
-        .input-group {
-            margin-top: 20px;
-            width: 80%;
-            max-width: 500px;
-        }
-        #word-list-input {
-            width: 100%;
-            height: 100px;
-            border-radius: 10px;
-            padding: 10px;
-            background: rgba(255,255,255,0.1);
-            border: 2px solid var(--primary-blue);
-            color: white;
-            font-family: inherit;
-        }
+.circle{
+    border-radius:50%;
+}
 
-        /* --- Game Loop Screen --- */
-        #game-loop {
-            flex-direction: column;
-            height: 100%;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px;
-            position: relative;
-        }
+.square{
+    border-radius:20%;
+}
 
-        /* Timer (Top) */
-        .top-ui {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 100%;
-        }
+@keyframes float{
+    from{
+        transform:translateY(100vh) rotate(0deg);
+    }
+    to{
+        transform:translateY(-120vh) rotate(360deg);
+    }
+}
 
-        #timer {
-            font-size: 4rem;
-            font-weight: 900;
-            color: var(--bright-gold);
-            margin-bottom: 10px;
-        }
+/* GENERAL */
 
-        #category-label {
-            font-size: 1.2rem;
-            text-transform: uppercase;
-            color: white;
-            opacity: 0.7;
-        }
+.screen{
+    width:100%;
+    max-width:1000px;
+    text-align:center;
+    padding:20px;
+}
 
-        /* The Word (Center) */
-        .word-display-container {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 100%;
-            overflow: hidden;
-            position: relative;
-        }
+h1{
+    font-size:4.5rem;
+    color:#ffd60a;
+    font-weight:900;
+    text-shadow:0 0 25px rgba(255,214,10,.5);
+}
 
-        #current-word {
-            font-size: 7rem; /* Massive (at least 5rem) */
-            font-weight: 900;
-            text-transform: uppercase;
-            white-space: nowrap;
-            /* 2. Word Transitions (Bounce/Scale in handled by JS) */
-        }
+.subtitle{
+    margin-top:10px;
+    font-size:1.3rem;
+    color:#dbeafe;
+}
 
-        /* Horizontal Controls (Bottom) */
-        .controls-ui {
-            display: flex;
-            gap: 15px;
-            width: 100%;
-            max-width: 800px;
-            margin-bottom: 20px;
-        }
+/* START SCREEN */
 
-        .control-btn {
-            flex: 1;
-            font-size: 1.2rem;
-            text-transform: uppercase;
-            font-weight: 900;
-            padding: 20px;
-            border-radius: 10px;
-            border: none;
-            cursor: pointer;
-            transition: opacity 0.2s;
-        }
-        .control-btn:active { opacity: 0.8; }
+select,
+textarea{
+    width:100%;
+    margin-top:20px;
+    border:none;
+    border-radius:16px;
+    padding:16px;
+    font-size:1rem;
+    background:rgba(255,255,255,.08);
+    color:white;
+    outline:none;
+}
 
-        #btn-pass { background-color: var(--orange-pass); color: white; }
-        #btn-correct { background-color: var(--green-correct); color: white; }
-        #btn-pause { background-color: var(--primary-blue); color: white; }
+textarea{
+    height:140px;
+    resize:none;
+}
 
-        /* Pause overlay */
-        #pause-overlay {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8);
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 10;
-        }
+.start-btn{
+    margin-top:25px;
+    padding:18px 40px;
+    border:none;
+    border-radius:16px;
+    background:#ffd60a;
+    color:#001d3d;
+    font-size:1.2rem;
+    font-weight:700;
+    cursor:pointer;
+    box-shadow:0 0 25px rgba(255,214,10,.3);
+}
 
-        /* --- Review Screen --- */
-        #review-screen {
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-            width: 100%;
-        }
+/* GAME */
 
-        .review-table-container {
-            width: 90%;
-            max-width: 700px;
-            max-height: 70vh;
-            overflow-y: auto;
-            margin-top: 20px;
-        }
+.topbar{
+    margin-bottom:40px;
+}
 
-        .review-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        .review-table th, .review-table td {
-            text-align: left;
-            padding: 10px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
+.timer{
+    font-size:3.5rem;
+    color:#ffd60a;
+    font-weight:900;
+}
 
-        .correct-word { color: var(--green-correct); text-transform: uppercase; }
-        .passed-word { color: var(--orange-pass); text-transform: uppercase; }
+.category{
+    margin-top:10px;
+    display:inline-block;
+    background:rgba(255,255,255,.08);
+    padding:10px 18px;
+    border-radius:14px;
+}
 
-        /* 2. Warning System (Flashes/Shake) */
-        @keyframes subtle-flash {
-            0% { border-color: transparent; }
-            50% { border-color: var(--vivid-red); }
-            100% { border-color: transparent; }
-        }
+.word-area{
+    height:42vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    overflow:hidden;
+}
 
-        @keyframes subtle-shake {
-            0% { transform: translateX(0px); }
-            25% { transform: translateX(3px); }
-            75% { transform: translateX(-3px); }
-            100% { transform: translateX(0px); }
-        }
+.word{
+    font-size:clamp(5rem,10vw,8rem);
+    font-weight:900;
+    white-space:nowrap;
+    animation:
+        slideLoop 8s ease-in-out infinite,
+        bounceIn .4s ease;
+}
 
-        .critical-warning {
-            animation: subtle-flash 0.5s infinite;
-        }
+@keyframes slideLoop{
+    0%{transform:translateX(25px);}
+    50%{transform:translateX(-25px);}
+    100%{transform:translateX(25px);}
+}
 
-        .shake-timer {
-            animation: subtle-shake 0.1s 10 ease-in-out;
-        }
+@keyframes bounceIn{
+    0%{
+        opacity:0;
+        transform:scale(.5);
+    }
+    70%{
+        transform:scale(1.1);
+    }
+    100%{
+        opacity:1;
+        transform:scale(1);
+    }
+}
 
-        /* Float shapes background animation */
-        #shapes-bg {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1;
-            pointer-events: none;
-        }
+/* BUTTONS */
 
-        .shape {
-            position: absolute;
-            background-color: rgba(255, 255, 255, 0.03);
-            border-radius: 5px;
-            opacity: 0.5;
-        }
+.controls{
+    display:flex;
+    justify-content:center;
+    gap:20px;
+    flex-wrap:wrap;
+}
 
-        /* Mobile Responsiveness */
-        @media (max-width: 600px) {
-            .game-title { font-size: 3rem; }
-            #current-word { font-size: 3.5rem; }
-            .control-btn { font-size: 1rem; padding: 15px; }
-            #timer { font-size: 3rem; }
-        }
-    </style>
+.btn{
+    min-width:170px;
+    padding:22px 35px;
+    border:none;
+    border-radius:18px;
+    color:white;
+    font-size:1.2rem;
+    font-weight:700;
+    cursor:pointer;
+}
+
+.pass{background:#f97316;}
+.correct{background:#16a34a;}
+.pause{background:#2563eb;}
+
+/* WARNING */
+
+.warning{
+    animation:borderFlash .5s infinite alternate;
+}
+
+@keyframes borderFlash{
+    from{
+        box-shadow:0 0 0 0 rgba(255,0,0,.2);
+    }
+    to{
+        box-shadow:0 0 30px 8px rgba(255,0,0,.8);
+    }
+}
+
+.shake{
+    animation:shake .25s infinite;
+}
+
+@keyframes shake{
+    0%{transform:translateX(0);}
+    25%{transform:translateX(-4px);}
+    50%{transform:translateX(4px);}
+    75%{transform:translateX(-4px);}
+    100%{transform:translateX(0);}
+}
+
+/* REVIEW */
+
+table{
+    width:100%;
+    margin-top:25px;
+    border-collapse:collapse;
+    background:rgba(255,255,255,.05);
+}
+
+th,td{
+    padding:14px;
+    border:1px solid rgba(255,255,255,.1);
+}
+
+.green{
+    color:#22c55e;
+}
+
+.orange{
+    color:#f59e0b;
+}
+
+.restart{
+    margin-top:25px;
+    padding:16px 30px;
+    border:none;
+    border-radius:15px;
+    background:#2563eb;
+    color:white;
+    cursor:pointer;
+}
+
+/* MOBILE */
+
+@media(max-width:768px){
+    h1{
+        font-size:3rem;
+    }
+
+    .word{
+        font-size:4rem;
+    }
+
+    .btn{
+        min-width:130px;
+        padding:18px;
+    }
+}
+<style>
+
+/* your existing CSS above */
+
+
+/* --- ADD THIS NEW CSS BELOW --- */
+
+.category{
+  margin-top:10px;
+  display:inline-block;
+  padding:10px 18px;
+  border-radius:14px;
+  background:rgba(255,255,255,.08);
+  color:rgba(255,255,255,.75);
+  font-size:1rem;
+}
+
+.bounce{
+  animation:bouncePop .35s ease;
+}
+
+@keyframes bouncePop{
+  0%{
+    transform:scale(.6);
+    opacity:0;
+  }
+  70%{
+    transform:scale(1.1);
+  }
+  100%{
+    transform:scale(1);
+    opacity:1;
+  }
+}
+
+</style>
+</style>
 </head>
 <body>
 
-    <div id="game-container">
-        
-        <div id="shapes-bg"></div>
+<div id="bg"></div>
 
-        <div id="start-screen" class="game-state active-state">
-            <h1 class="game-title">PINOY HENYO</h1>
-            <p class="game-subtitle">How many words can you guess?</p>
-            <button id="start-button">Start Game</button>
-            <div class="input-group">
-                <p>Paste Custom Words (comma separated, Optional):</p>
-                <textarea id="word-list-input" placeholder="Object: Car, Animal: Dog, Food: Pizza..."></textarea>
-            </div>
-        </div>
+<!-- START SCREEN -->
+<div id="startScreen" class="screen">
+    <h1>PINOY HENYO</h1>
+    <div class="subtitle">How many words can you guess?</div>
 
-        <div id="game-loop" class="game-state">
-            
-            <div class="top-ui">
-                <div id="timer">120</div>
-                <div id="category-label">CATEGORY</div>
-            </div>
+    <select id="levelSelect">
+        <option value="easy">Level 1 (Easy)</option>
+        <option value="medium">Level 2 (Medium)</option>
+        <option value="hard">Level 3 (Hard)</option>
+    </select>
 
-            <div class="word-display-container">
-                <h2 id="current-word">WORD</h2>
-            </div>
+    <textarea id="customWords"
+    placeholder="Paste custom words separated by commas:
+apple, tiger, doctor, Thailand"></textarea>
 
-            <div class="controls-ui">
-                <button id="btn-pass" class="control-btn">PASS (Orange)</button>
-                <button id="btn-correct" class="control-btn">CORRECT (Green)</button>
-                <button id="btn-pause" class="control-btn">PAUSE (Blue)</button>
-            </div>
+    <button class="start-btn" onclick="startGame()">START GAME</button>
+</div>
 
-            <div id="pause-overlay">
-                <h1>Paused</h1>
-                <p>Tap to Resume</p>
-            </div>
-        </div>
-
-        <div id="review-screen" class="game-state">
-            <h1>Game Over</h1>
-            <p id="first-guess-timestamp"></p>
-            <div class="review-table-container">
-                <table class="review-table">
-                    <thead>
-                        <tr><th>Word</th><th>Result</th></tr>
-                    </thead>
-                    <tbody id="review-body">
-                        </tbody>
-                </table>
-            </div>
-            <button id="restart-button">Play Again</button>
-        </div>
-
+<!-- GAME SCREEN -->
+<div id="gameScreen" class="screen hidden">
+    <div class="topbar">
+        <div id="timer" class="timer">120</div>
+       <div id="category-display" class="category">Category</div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
-    <script>
-        /* -----------------------------------------------------------
-           Gameplay Logic & Core Features (JS)
-        ----------------------------------------------------------- */
-        
-        const config = {
-            gameDuration: 120, // 2 minutes (120s)
-            criticalTime: 10,  // Flashing start
-            // Built-in Word List
-            // 4. Level System
-            levels: {
-                easy:   [{ word: 'CAR', cat: 'Object' }, { word: 'DOG', cat: 'Animal' }, { word: 'PIZZA', cat: 'Food' }],
-                medium: [{ word: 'RUN', cat: 'Action' }, { word: 'PARK', cat: 'Place' }, { word: 'DOCTOR', cat: 'Job' }],
-                hard:   [{ word: 'HAPPY', cat: 'Feeling' }, { word: 'PHILIPPINES', cat: 'Country' }, { word: 'BIRTHDAY', cat: 'Event' }]
-            }
-        };
+    <div class="word-area">
+        <div id="word-display" class="word">READY</div>
+    </div>
 
-        let gameState = {
-            timer: 0,
-            interval: null,
-            paused: false,
-            currentWordIndex: 0,
-            activeWords: [],
-            guessedWords: [],
-            passedWords: [],
-            firstCorrectGuessTime: null
-        };
+    <div class="controls">
+        <button class="btn pass" onclick="passWord()">PASS</button>
+        <button class="btn correct" onclick="function correctWord() {
+  guessed.push(words[currentIndex].word);
 
-        // UI Elements
-        const elContainer = document.getElementById('game-container');
-        const screens = {
-            start: document.getElementById('start-screen'),
-            game: document.getElementById('game-loop'),
-            review: document.getElementById('review-screen')
-        };
-        const elTimer = document.getElementById('timer');
-        const elCategory = document.getElementById('category-label');
-        const elWord = document.getElementById('current-word');
-        const elReviewBody = document.getElementById('review-body');
-        const elTimestamp = document.getElementById('first-guess-timestamp');
-        const elPauseOverlay = document.getElementById('pause-overlay');
+  if (!firstGuessTimestamp) {
+    firstGuessTimestamp = new Date().toLocaleTimeString();
+  }
 
-        // Audio Placeholders (source manually if needed)
-        // 5. Audio Integration (with currentTime=0 for snappy playback)
-        const sounds = {
-            correct: new Audio('correct.mp3'),
-            pass: new Audio('pass.mp3'),
-            music: new Audio('gamemusic1.mp3'),
-            timerWarning: new Audio('timer.mp3') // plays at 10s
-        };
+  playAudio("correctSound");
 
-        // --- Initialization ---
-        function init() {
-            setupButtons();
-            setupBackground();
-        }
+  confetti({
+    particleCount: 120,
+    spread: 90,
+    origin: { y: .6 },
+    colors: ["#ffd60a", "#2563eb"]
+  });
 
-        // --- Core Game Flow ---
-        function startGame() {
-            // Setup Words
-            // 4. Custom Input handling
-            const customInput = document.getElementById('word-list-input').value;
-            if (customInput.trim() !== '') {
-                gameState.activeWords = parseCustomWords(customInput);
-            } else {
-                gameState.activeWords = [...config.levels.easy, ...config.levels.medium, ...config.levels.hard];
-            }
-            
-            // Shuffle
-            gameState.activeWords = shuffleArray(gameState.activeWords);
+  currentIndex++;
+  showWord();
+}">CORRECT</button>
+        <button class="btn pause" onclick="pauseGame()">PAUSE</button>
+    </div>
+</div>
 
-            // Reset State
-            gameState.timer = config.gameDuration;
-            gameState.currentWordIndex = 0;
-            gameState.guessedWords = [];
-            gameState.passedWords = [];
-            gameState.firstCorrectGuessTime = null;
-            elContainer.classList.remove('critical-warning');
-            elTimer.classList.remove('shake-timer');
+<!-- REVIEW -->
+<div id="reviewScreen" class="screen hidden">
+    <h1>GAME OVER</h1>
+    <div id="firstGuessTime"></div>
 
-            // Switch Screen
-            switchScreen('game');
-            loadNextWord();
-            
-            // Start Timer
-            gameState.interval = setInterval(updateTimer, 1000);
-            updateTimerDisplay(); // Initial draw
-            
-            // Sounds
-            playSound('music');
-        }
+    <table>
+        <thead>
+            <tr>
+                <th>Word</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody id="reviewBody"></tbody>
+    </table>
 
-        function endGame() {
-            clearInterval(gameState.interval);
-            switchScreen('review');
-            generateReviewTable();
-            if (gameState.firstCorrectGuessTime) {
-                elTimestamp.innerText = `First word guessed at: ${gameState.firstCorrectGuessTime}s remaining.`;
-            } else {
-                elTimestamp.innerText = `No words guessed correctly.`;
-            }
-            sounds.music.pause();
-        }
+    <button class="restart" onclick="location.reload()">PLAY AGAIN</button>
+</div>
 
-        // --- Timer Logic ---
-        function updateTimer() {
-            if (gameState.paused) return;
+<!-- AUDIO -->
+<audio id="correctSound" src="correct.mp3"></audio>
+<audio id="passSound" src="pass.mp3"></audio>
+<audio id="music" src="gamemusic1.mp3" loop></audio>
+<audio id="timerSound" src="timer.mp3"></audio>
 
-            gameState.timer--;
-            updateTimerDisplay();
+<script>
+const builtInWords = {
+  easy: [
+    { word: "Chair", category: "Object / Animal / Food" },
+    { word: "Tiger", category: "Object / Animal / Food" },
+    { word: "Pizza", category: "Object / Animal / Food" },
+    { word: "Banana", category: "Object / Animal / Food" },
+    { word: "Dog", category: "Object / Animal / Food" },
+    { word: "Apple", category: "Object / Animal / Food" }
+  ],
 
-            // 2. Warning System (10 seconds)
-            if (gameState.timer === config.criticalTime) {
-                elContainer.classList.add('critical-warning');
-                elTimer.classList.add('shake-timer');
-                playSound('timerWarning');
-            }
+  medium: [
+    { word: "Running", category: "Action / Place / Job" },
+    { word: "Airport", category: "Action / Place / Job" },
+    { word: "Doctor", category: "Action / Place / Job" },
+    { word: "Teacher", category: "Action / Place / Job" },
+    { word: "Swimming", category: "Action / Place / Job" }
+  ],
 
-            if (gameState.timer <= 0) {
-                endGame();
-            }
-        }
+  hard: [
+    { word: "Excited", category: "Feeling / Country / Event" },
+    { word: "Thailand", category: "Feeling / Country / Event" },
+    { word: "Festival", category: "Feeling / Country / Event" },
+    { word: "Wedding", category: "Feeling / Country / Event" }
+  ]
+};
+let words=[];
+let guessed=[];
+let passed=[];
+let currentWord="";
+let timer=120;
+let timerInterval;
+let paused=false;
+let firstGuessTimestamp=null;
 
-        function updateTimerDisplay() {
-            elTimer.innerText = gameState.timer;
-        }
+/* BACKGROUND */
 
-        // --- Word Management ---
-        function loadNextWord() {
-            if (gameState.currentWordIndex >= gameState.activeWords.length) {
-                endGame();
-                return;
-            }
+function createShapes(){
+    const bg=document.getElementById("bg");
 
-            const newWordData = gameState.activeWords[gameState.currentWordIndex];
-            
-            // UI Update
-            elWord.innerText = newWordData.word;
-            elCategory.innerText = newWordData.cat;
+    for(let i=0;i<25;i++){
+        const shape=document.createElement("div");
+        shape.className=Math.random()>0.5 ? "shape circle":"shape square";
+        const size=20+Math.random()*100;
 
-            // 2. Word Transition: Scale Up animation
-            elWord.style.transform = 'scale(0.5)';
-            elWord.style.opacity = '0';
-            requestAnimationFrame(() => {
-                elWord.style.transition = 'transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s';
-                elWord.style.transform = 'scale(1)';
-                elWord.style.opacity = '1';
-            });
-            // Cleanup animation after it plays
-            setTimeout(() => elWord.style.transition = '', 300);
-        }
+        shape.style.width=size+"px";
+        shape.style.height=size+"px";
+        shape.style.left=Math.random()*100+"%";
+        shape.style.animationDuration=(15+Math.random()*20)+"s";
+        shape.style.animationDelay=Math.random()*-20+"s";
 
-        // --- Game Actions ---
-        function handlePass() {
-            if (gameState.paused) return;
-            playSound('pass');
-            const currentWord = gameState.activeWords[gameState.currentWordIndex];
-            gameState.passedWords.push(currentWord);
-            gameState.currentWordIndex++;
-            loadNextWord();
-        }
+        bg.appendChild(shape);
+    }
+}
+createShapes();
 
-        function handleCorrect() {
-            if (gameState.paused) return;
-            playSound('correct');
-            
-            // 2. Victory Effects: Multi-directional burst of gold and blue
-            confetti({
-                particleCount: 100,
-                spread: 70,
-                origin: { y: 0.6 },
-                colors: ['#0047AB', '#FFD700'] // blue and gold
-            });
+/* UTIL */
 
-            // Post-Game Review: Tracking data
-            const currentWord = gameState.activeWords[gameState.currentWordIndex];
-            gameState.guessedWords.push(currentWord);
+function shuffle(array){
+    return array.sort(()=>Math.random()-0.5);
+}
 
-            // Post-Game Review: Track first guess time
-            if (gameState.firstCorrectGuessTime === null) {
-                gameState.firstCorrectGuessTime = gameState.timer;
-            }
+function playAudio(id){
+    const a=document.getElementById(id);
+    a.currentTime=0;
+    a.play().catch(()=>{});
+}
 
-            gameState.currentWordIndex++;
-            loadNextWord();
-        }
+/* GAME */
 
-        function handlePause() {
-            gameState.paused = !gameState.paused;
-            if (gameState.paused) {
-                sounds.music.pause();
-                elPauseOverlay.style.display = 'flex';
-            } else {
-                playSound('music');
-                elPauseOverlay.style.display = 'none';
-            }
-        }
+function startGame() {
+  document.getElementById("startScreen").classList.add("hidden");
+  document.getElementById("gameScreen").classList.remove("hidden");
 
-        // --- Post-Game Review Screen ---
-        // 4. Review Screen: generate modern table
-        function generateReviewTable() {
-            elReviewBody.innerHTML = ''; // clear
+  let custom = document.getElementById("customWords")
+    .value
+    .trim();
 
-            // Modern sorting: show correct first
-            const combined = [
-                ...gameState.guessedWords.map(w => ({...w, status: 'guessed'})),
-                ...gameState.passedWords.map(w => ({...w, status: 'passed'}))
-            ];
+  if (custom) {
+    words = custom
+      .split(",")
+      .map(w => w.trim())
+      .filter(w => w.length > 0)
+      .map(w => ({
+        word: w,
+        category: "Custom"
+      }));
 
-            combined.forEach(item => {
-                const row = document.createElement('tr');
-                
-                const cellWord = document.createElement('td');
-                cellWord.innerText = item.word;
-                if(item.status === 'guessed') cellWord.classList.add('correct-word');
-                row.appendChild(cellWord);
+  } else {
+    const level = document.getElementById("levelSelect").value;
+    words = [...builtInWords[level]];
+  }
 
-                const cellStatus = document.createElement('td');
-                cellStatus.innerText = item.status === 'guessed' ? 'Guessed (Green)' : 'Passed (Orange)';
-                if(item.status === 'passed') cellStatus.classList.add('passed-word');
-                row.appendChild(cellStatus);
+  words = shuffle(words);
 
-                elReviewBody.appendChild(row);
-            });
-        }
+  playAudio("music");
 
-        // --- Helper: Switch Screens ---
-        function switchScreen(activeKey) {
-            Object.keys(screens).forEach(key => {
-                screens[key].classList.remove('active-state');
-            });
-            screens[activeKey].classList.add('active-state');
-        }
+  currentIndex = 0;
 
-        // --- Helper: Shuffle Array ---
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-            return array;
-        }
+  showWord();
 
-        // --- Helper: Parse Custom Words ---
-        function parseCustomWords(input) {
-            // Expected format: Category: Word, Category: Word
-            return input.split(',').map(pair => {
-                const parts = pair.split(':');
-                if (parts.length === 2) {
-                    return { cat: parts[0].trim(), word: parts[1].trim() };
-                } else {
-                    return { cat: 'CUSTOM', word: pair.trim() }; // fallback
-                }
-            });
-        }
+  timerInterval = setInterval(updateTimer, 1000);
+}
 
-        // --- Helper: Play Audio snappy ---
-        // 5. Audio Integration: currentTime = 0
-        function playSound(soundId) {
-            const sound = sounds[soundId];
-            if (sound && sound.readyState >= 2) {
-                sound.currentTime = 0; // Snap!
-                sound.play().catch(() => { /* ignore play errors, common in browsers */ });
-            }
-        }
+    playAudio("music");
+    function showWord() {
+  if (currentIndex >= words.length) {
+    endGame();
+    return;
+  }
 
-        // --- Setup Buttons & Interactions ---
-        function setupButtons() {
-            document.getElementById('start-button').addEventListener('click', startGame);
-            document.getElementById('restart-button').addEventListener('click', () => switchScreen('start'));
-            document.getElementById('btn-pass').addEventListener('click', handlePass);
-            document.getElementById('btn-correct').addEventListener('click', handleCorrect);
-            document.getElementById('btn-pause').addEventListener('click', handlePause);
-            document.getElementById('pause-overlay').addEventListener('click', handlePause);
-        }
+  const current = words[currentIndex];
 
-        // --- 1. Visual Identity: Float shapes background animation ---
-        function setupBackground() {
-            const shapesContainer = document.getElementById('shapes-bg');
-            for (let i = 0; i < 20; i++) {
-                const shape = document.createElement('div');
-                shape.classList.add('shape');
-                
-                const size = Math.random() * 50 + 20; // 20-70px
-                shape.style.width = `${size}px`;
-                shape.style.height = `${size}px`;
-                shape.style.left = `${Math.random() * 100}vw`;
-                shape.style.top = `${Math.random() * 100}vh`;
+  const wordEl = document.getElementById("word-display");
+  const categoryEl = document.getElementById("category-display");
 
-                // Minimal slow movement
-                shape.style.transition = 'all 20s linear';
-                
-                shapesContainer.appendChild(shape);
+  categoryEl.innerText = current.category;
+  wordEl.innerText = current.word;
 
-                // Start movement loop
-                moveShape(shape);
-            }
-        }
+  wordEl.classList.remove("bounce");
+  void wordEl.offsetWidth;
+  wordEl.classList.add("bounce");
+}
 
-        function moveShape(shape) {
-            setInterval(() => {
-                const newX = Math.random() * 100;
-                const newY = Math.random() * 100;
-                shape.style.left = `${newX}vw`;
-                shape.style.top = `${newY}vh`;
-            }, 20000); // long interval for slow move
-        }
+function function passWord() {
+  passed.push(words[currentIndex].word);
 
-        init();
+  playAudio("passSound");
 
-    </script>
+  currentIndex++;
+  showWord();
+}{
+    passed.push(currentWord);
+    playAudio("passSound");
+    nextWord();
+}
+
+function pauseGame(){
+    paused=!paused;
+
+    document.querySelector(".pause").innerText=
+        paused ? "RESUME" : "PAUSE";
+}
+
+function updateTimer(){
+
+    if(paused) return;
+
+    timer--;
+    document.getElementById("timer").innerText=timer;
+
+    if(timer<=10){
+        document.body.classList.add("warning");
+        document.getElementById("timer").classList.add("shake");
+        playAudio("timerSound");
+    }
+
+    if(timer<=0){
+        endGame();
+    }
+}
+
+function endGame(){
+
+    clearInterval(timerInterval);
+
+    document.getElementById("music").pause();
+
+    document.getElementById("gameScreen")
+        .classList.add("hidden");
+
+    document.getElementById("reviewScreen")
+        .classList.remove("hidden");
+
+    const tbody=document.getElementById("reviewBody");
+
+    guessed.forEach(word=>{
+        tbody.innerHTML += `
+        <tr>
+            <td>${word}</td>
+            <td class="green">Guessed</td>
+        </tr>`;
+    });
+
+    passed.forEach(word=>{
+        tbody.innerHTML += `
+        <tr>
+            <td>${word}</td>
+            <td class="orange">Passed</td>
+        </tr>`;
+    });
+
+    document.getElementById("firstGuessTime").innerHTML=
+        firstGuessTimestamp
+        ? `First correct guess: <b>${firstGuessTimestamp}</b>`
+        : "No correct guesses.";
+}
+</script>
+
 </body>
 </html>
