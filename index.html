@@ -3,19 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pinoy Henyo - Ultimate Classroom Edition</title>
-    <!-- Offline NLP Library -->
-    <script src="https://unpkg.com/compromise"></script>
-
+    <title>Pinoy Henyo - Ultimate Edition</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Roboto+Condensed:wght@700&display=swap');
-
-        :root {
-            --gold: #f1c40f;
-            --orange: #e67e22;
-            --red: #e74c3c;
-            --dark: #2c3e50;
-        }
+        :root { --gold: #f1c40f; --orange: #e67e22; --red: #e74c3c; --dark: #2c3e50; }
 
         body {
             font-family: 'Roboto Condensed', sans-serif;
@@ -26,175 +17,156 @@
         .game-container {
             width: 95vw; height: 90vh; border: 12px solid var(--dark); border-radius: 50px;
             background: rgba(0, 0, 0, 0.15); position: relative; display: flex; flex-direction: column; 
-            justify-content: center; align-items: center;
-            box-shadow: inset 0 0 100px rgba(0,0,0,0.5), 0 30px 60px rgba(0,0,0,0.8);
+            justify-content: center; align-items: center; box-shadow: inset 0 0 100px rgba(0,0,0,0.5), 0 30px 60px rgba(0,0,0,0.8);
         }
 
-        .screen { display: none; flex-direction: column; align-items: center; width: 100%; animation: fadeIn 0.5s; }
+        .screen { display: none; flex-direction: column; align-items: center; width: 100%; }
         .active { display: flex; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        h1 { font-family: 'Luckiest Guy', cursive; font-size: 8rem; color: var(--gold); margin: 0; text-shadow: 8px 8px 0px #000; letter-spacing: 5px; }
+        /* Setup Screen Dashboard */
+        .setup-box { background: rgba(255,255,255,0.9); color: #333; padding: 20px; border-radius: 20px; width: 600px; max-height: 70vh; overflow-y: auto; }
+        .cat-group { margin-bottom: 15px; border-bottom: 1px solid #ddd; padding-bottom: 10px; }
+        .cat-group label { font-weight: bold; color: var(--orange); display: block; margin-bottom: 5px; }
+        .cat-group input { width: 95%; padding: 8px; border: 2px solid #ccc; border-radius: 5px; }
 
         /* HUD & HEARTS */
         .hud {
             position: absolute; top: 30px; width: 92%; display: flex; justify-content: space-between;
-            padding: 20px 60px; background: rgba(0,0,0,0.7); border-radius: 100px; box-sizing: border-box; align-items: center;
-            border: 2px solid rgba(255,255,255,0.2);
+            padding: 20px 60px; background: rgba(0,0,0,0.8); border-radius: 100px; align-items: center;
         }
-        .hud-item { font-size: 2.2rem; font-family: 'Luckiest Guy', sans-serif; color: var(--gold); }
-        .lives-container { display: flex; gap: 15px; font-size: 3rem; }
-        .heart { color: var(--red); text-shadow: 3px 3px #000; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .heart.lost { color: #444; filter: grayscale(1); transform: scale(0.7) translateY(10px); opacity: 0.5; }
+        .hud-item { font-size: 2rem; font-family: 'Luckiest Guy'; color: var(--gold); }
+        .lives-container { display: flex; gap: 10px; font-size: 2.5rem; }
+        .heart { color: var(--red); text-shadow: 2px 2px #000; transition: 0.3s; }
+        .heart.lost { filter: grayscale(1); opacity: 0.2; transform: scale(0.8); }
 
-        /* Main Display */
+        /* Word Display with Scaling */
         .word-box {
-            background: #fff; color: #111; padding: 50px 100px; border-radius: 30px;
-            font-size: 10rem; box-shadow: 0 25px 0px #bdc3c7, 0 40px 60px rgba(0,0,0,0.6);
-            margin: 40px 0; min-width: 700px; text-align: center; text-transform: uppercase;
-            animation: popWord 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            background: #fff; color: #111; padding: 40px; border-radius: 30px;
+            width: 800px; height: 250px; display: flex; justify-content: center; align-items: center;
+            box-shadow: 0 20px 0px #bdc3c7; margin: 40px 0; text-transform: uppercase;
         }
-        @keyframes popWord { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        #word-text { font-size: 8rem; text-align: center; line-height: 1; word-wrap: break-word; }
 
-        /* Controls */
-        .controls { display: flex; gap: 40px; margin-top: 20px; }
         .btn {
-            padding: 20px 60px; font-size: 1.8rem; font-weight: 900; border-radius: 100px; border: none; cursor: pointer; color: white;
-            background: linear-gradient(to bottom, #f1c40f 0%, #d35400 100%); box-shadow: 0 10px 0 #914500; text-transform: uppercase;
+            padding: 15px 50px; font-size: 1.5rem; font-weight: 900; border-radius: 100px; border: none; cursor: pointer; color: white;
+            background: linear-gradient(to bottom, #f1c40f 0%, #d35400 100%); box-shadow: 0 8px 0 #914500;
         }
-        .btn:active { transform: translateY(6px); box-shadow: 0 4px 0 #914500; }
-        .btn-correct { background: linear-gradient(to bottom, #2ecc71, #27ae60); box-shadow: 0 10px 0 #1e8449; }
-        .btn-pass { background: linear-gradient(to bottom, #95a5a6, #7f8c8d); box-shadow: 0 10px 0 #566573; }
-        .btn-disabled { filter: grayscale(1); opacity: 0.3; cursor: not-allowed; transform: scale(0.9); }
+        .btn-correct { background: linear-gradient(to bottom, #2ecc71, #27ae60); box-shadow: 0 8px 0 #1e8449; }
+        .btn-pass { background: linear-gradient(to bottom, #95a5a6, #7f8c8d); box-shadow: 0 8px 0 #566573; }
+        .btn-disabled { opacity: 0.3; pointer-events: none; }
 
-        /* End Game Overlay */
         #end-modal {
             position: absolute; inset: 0; background: rgba(0,0,0,0.95); z-index: 200; 
-            display: none; flex-direction: column; justify-content: center; align-items: center; text-align: center;
+            display: none; flex-direction: column; justify-content: center; align-items: center;
         }
-        #end-modal h2 { font-family: 'Luckiest Guy'; font-size: 12rem; color: var(--red); margin: 0; text-shadow: 5px 5px 0 #fff; }
-        .final-score-text { font-size: 4rem; margin: 30px 0; color: #fff; }
-
-        .panic { color: #ff4757 !important; animation: pulse 0.5s infinite; }
-        @keyframes pulse { 50% { transform: scale(1.15); } }
-
-        textarea { font-size: 1.2rem; padding: 15px; border-radius: 20px; border: 5px solid var(--gold); width: 500px; height: 100px; margin: 20px; }
     </style>
 </head>
 <body>
 
 <div class="game-container">
     
-    <!-- SCREEN 1: MENU -->
+    <!-- DASHBOARD SETUP -->
     <div id="menu-screen" class="screen active">
-        <h1>PINOY HENYO</h1>
-        <p style="font-size: 1.5rem; letter-spacing: 3px;">ESL CLASSROOM EDITION</p>
-        <textarea id="teacher-input" placeholder="Enter words separated by commas (e.g. Pizza, Teacher, Brazil, Dancing)"></textarea>
-        <button class="btn" onclick="startGame()">START SESSION</button>
+        <h1 style="font-family:'Luckiest Guy'; font-size:4rem; color:var(--gold); margin:0;">PINOY HENYO</h1>
+        <p>Enter words for each category (comma separated):</p>
+        <div class="setup-box" id="category-inputs">
+            <!-- Input groups -->
+            <div class="cat-group"><label>🍔 FOOD</label><input type="text" data-cat="FOOD" placeholder="Pizza, Adobo, Apple..."></div>
+            <div class="cat-group"><label>👮 JOB</label><input type="text" data-cat="JOB" placeholder="Police, Doctor, Teacher..."></div>
+            <div class="cat-group"><label>🦁 ANIMAL</label><input type="text" data-cat="ANIMAL" placeholder="Dog, Lion, Cat..."></div>
+            <div class="cat-group"><label>📍 PLACE</label><input type="text" data-cat="PLACE" placeholder="School, London, Park..."></div>
+            <div class="cat-group"><label>🏃 ACTION</label><input type="text" data-cat="ACTION" placeholder="Swimming, Running, Eating..."></div>
+            <div class="cat-group"><label>💡 OBJECT</label><input type="text" data-cat="OBJECT" placeholder="Table, Phone, Car..."></div>
+        </div>
+        <button class="btn" style="margin-top:20px" onclick="prepareGame()">START GAME</button>
     </div>
 
-    <!-- SCREEN 2: GAME -->
+    <!-- GAME SCREEN -->
     <div id="game-screen" class="screen">
         <div class="hud">
             <div id="category-display" class="hud-item">CATEGORY: ???</div>
-            <div class="lives-container" id="lives-box">
+            <div class="lives-container">
                 <span class="heart" id="h1">❤</span>
                 <span class="heart" id="h2">❤</span>
                 <span class="heart" id="h3">❤</span>
             </div>
             <div id="timer-display" class="hud-item">02:00</div>
         </div>
-        
-        <div class="word-box" id="word-display">READY?</div>
-
-        <div class="controls">
+        <div class="word-box"><div id="word-text">READY?</div></div>
+        <div style="display:flex; gap:30px;">
             <button class="btn btn-correct" onclick="handleCorrect()">CORRECT ✔</button>
             <button class="btn btn-pass" id="pass-btn" onclick="handlePass()">PASS ⏭</button>
         </div>
-        <div style="margin-top:40px; font-size: 2.5rem; font-weight: bold;">SCORE: <span id="score" style="color:var(--gold); font-size: 3.5rem;">0</span></div>
+        <div style="margin-top:20px; font-size:2rem">SCORE: <span id="score" style="color:var(--gold)">0</span></div>
     </div>
 
-    <!-- SCREEN 3: TIME'S UP OVERLAY -->
     <div id="end-modal">
-        <h2 id="end-title">TIME'S UP!</h2>
-        <div class="final-score-text">TOTAL SCORE: <span id="final-score" style="color:var(--gold)">0</span></div>
-        <button class="btn" onclick="location.reload()">BACK TO MENU</button>
+        <h1 id="end-title" style="font-size:8rem; color:var(--red)">TIME'S UP!</h1>
+        <p style="font-size:3rem">FINAL SCORE: <span id="final-score" style="color:var(--gold)">0</span></p>
+        <button class="btn" onclick="location.reload()">PLAY AGAIN</button>
     </div>
 </div>
 
-<!-- Sounds -->
 <audio id="snd-start" src="start.mp3"></audio>
 <audio id="snd-correct" src="correct.mp3"></audio>
 <audio id="snd-pass" src="pass.mp3"></audio>
 <audio id="snd-timer" src="timer.mp3"></audio>
 
 <script>
-    let words = [];
+    let gameQueue = [];
     let currentIndex = 0;
     let score = 0;
+    let lives = 3;
     let timer;
     let timeLeft = 120;
-    let lives = 3;
 
-    function getSmartCategory(word) {
-        const doc = nlp(word);
-        
-        // Manual Priority List (Add your own here!)
-        const manual = {
-            'FOOD': ['pizza', 'adobo', 'ramen', 'apple', 'bread', 'sushi', 'burger'],
-            'JOB': ['nurse', 'teacher', 'pilot', 'doctor', 'chef', 'vlogger'],
-            'BODY PART': ['eye', 'knee', 'heart', 'brain', 'shoulder'],
-            'COUNTRY': ['philippines', 'japan', 'usa', 'canada', 'france']
-        };
+    function prepareGame() {
+        gameQueue = [];
+        const inputs = document.querySelectorAll('#category-inputs input');
+        inputs.forEach(input => {
+            if (input.value) {
+                let categoryWords = input.value.split(',');
+                categoryWords.forEach(w => {
+                    if (w.trim()) gameQueue.push({ word: w.trim(), cat: input.getAttribute('data-cat') });
+                });
+            }
+        });
 
-        for (let cat in manual) {
-            if (manual[cat].includes(word.toLowerCase().trim())) return cat;
-        }
-
-        // Automatic NLP Detection
-        if (doc.places().text()) return "PLACE";
-        if (doc.verbs().text()) return "ACTION";
-        if (doc.people().text()) return "PERSON";
+        if (gameQueue.length === 0) return alert("Please enter at least one word!");
         
-        return "OBJECT / THING";
-    }
-
-    function startGame() {
-        const input = document.getElementById('teacher-input').value;
-        if (!input) return alert("Please add words!");
+        // Shuffle the words so they don't appear category by category
+        gameQueue.sort(() => Math.random() - 0.5);
         
-        words = input.split(',').map(w => w.trim());
-        document.getElementById('snd-start').play().catch(()=>{}); // Catch if user hasn't interacted
-        
+        document.getElementById('snd-start').play();
         document.getElementById('menu-screen').classList.remove('active');
         document.getElementById('game-screen').classList.add('active');
-        
         showWord();
         startTimer();
     }
 
     function showWord() {
-        if (currentIndex < words.length) {
-            const currentWord = words[currentIndex];
-            const display = document.getElementById('word-display');
+        if (currentIndex < gameQueue.length) {
+            const item = gameQueue[currentIndex];
+            const textEl = document.getElementById('word-text');
+            textEl.innerText = item.word;
+            document.getElementById('category-display').innerText = "CATEGORY: " + item.cat;
             
-            // Re-trigger animation
-            display.style.animation = 'none';
-            display.offsetHeight; 
-            display.style.animation = null;
-
-            display.innerText = currentWord;
-            document.getElementById('category-display').innerText = "CATEGORY: " + getSmartCategory(currentWord);
-        } else {
-            endGame("FINISHED!");
-        }
+            // Dynamic Font Scaling
+            let fontSize = 8;
+            textEl.style.fontSize = fontSize + "rem";
+            while (textEl.scrollHeight > 200 || textEl.scrollWidth > 750) {
+                fontSize -= 0.5;
+                textEl.style.fontSize = fontSize + "rem";
+                if (fontSize < 2) break;
+            }
+        } else { endGame("WELL DONE!"); }
     }
 
     function handleCorrect() {
         document.getElementById('snd-correct').play();
         score++;
         document.getElementById('score').innerText = score;
-        nextWord();
+        next();
     }
 
     function handlePass() {
@@ -202,44 +174,30 @@
             document.getElementById('snd-pass').play();
             document.getElementById('h' + lives).classList.add('lost');
             lives--;
-            
-            if (lives === 0) {
-                const pBtn = document.getElementById('pass-btn');
-                pBtn.classList.add('btn-disabled');
-                pBtn.onclick = null;
-            }
-            nextWord();
+            if (lives === 0) document.getElementById('pass-btn').classList.add('btn-disabled');
+            next();
         }
     }
 
-    function nextWord() {
-        currentIndex++;
-        showWord();
-    }
+    function next() { currentIndex++; showWord(); }
 
     function startTimer() {
         timer = setInterval(() => {
             timeLeft--;
-            const mins = Math.floor(timeLeft / 60);
-            const secs = timeLeft % 60;
-            const display = document.getElementById('timer-display');
-            display.innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-            
-            if (timeLeft === 10) {
-                document.getElementById('snd-timer').play();
-                display.classList.add('panic');
-            }
+            let m = Math.floor(timeLeft / 60);
+            let s = timeLeft % 60;
+            document.getElementById('timer-display').innerText = `${m}:${s < 10 ? '0'+s : s}`;
+            if (timeLeft === 10) document.getElementById('snd-timer').play();
             if (timeLeft <= 0) endGame("TIME'S UP!");
         }, 1000);
     }
 
-    function endGame(title) {
+    function endGame(msg) {
         clearInterval(timer);
-        document.getElementById('end-title').innerText = title;
+        document.getElementById('end-title').innerText = msg;
         document.getElementById('final-score').innerText = score;
         document.getElementById('end-modal').style.display = 'flex';
     }
 </script>
-
 </body>
 </html>
