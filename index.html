@@ -3,136 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pinoy Henyo - Studio Edition</title>
+    <title>Pinoy Henyo - 3 Hearts Edition</title>
+    <script src="https://unpkg.com/compromise"></script>
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Roboto+Condensed:wght@700&display=swap');
 
         :root {
             --gold: #f1c40f;
             --orange: #e67e22;
-            --dark-red: #8e0000;
-            --gloss: rgba(255, 255, 255, 0.3);
+            --red: #e74c3c;
         }
 
         body {
             font-family: 'Roboto Condensed', sans-serif;
-            /* Retro Sunburst Background */
             background: radial-gradient(circle, #f39c12 0%, #d35400 70%, #8e0000 100%);
-            color: white;
-            margin: 0;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
+            color: white; margin: 0; height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden;
         }
 
-        /* Container with a "TV Screen" Border */
         .game-container {
-            width: 95vw;
-            height: 90vh;
-            border: 10px solid #2c3e50;
-            border-radius: 40px;
-            background: rgba(0, 0, 0, 0.1);
-            position: relative;
+            width: 95vw; height: 90vh; border: 10px solid #2c3e50; border-radius: 40px;
+            background: rgba(0, 0, 0, 0.1); position: relative; display: flex; flex-direction: column; justify-content: center; align-items: center;
             box-shadow: inset 0 0 100px rgba(0,0,0,0.5), 0 20px 50px rgba(0,0,0,0.8);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
         }
 
         .screen { display: none; flex-direction: column; align-items: center; width: 100%; }
         .active { display: flex; }
 
-        /* Typography */
-        h1 {
-            font-family: 'Luckiest Guy', cursive;
-            font-size: 8rem;
-            color: var(--gold);
-            margin: 0;
-            text-shadow: 8px 8px 0px #000, 12px 12px 20px rgba(0,0,0,0.5);
-            letter-spacing: 5px;
+        h1 { font-family: 'Luckiest Guy', cursive; font-size: 7rem; color: var(--gold); margin: 0; text-shadow: 6px 6px 0px #000; }
+
+        /* HUD & HEARTS */
+        .hud {
+            position: absolute; top: 40px; width: 90%; display: flex; justify-content: space-between;
+            padding: 15px 50px; background: rgba(0,0,0,0.6); border-radius: 100px; box-sizing: border-box; align-items: center;
+        }
+        .hud div { font-size: 2rem; font-family: 'Luckiest Guy', sans-serif; color: var(--gold); }
+        .lives-container { display: flex; gap: 10px; font-size: 2.5rem; }
+        .heart { color: var(--red); text-shadow: 2px 2px #000; transition: all 0.3s; }
+        .heart.lost { color: #555; filter: grayscale(1); transform: scale(0.8); }
+
+        .word-box {
+            background: white; color: #222; padding: 40px 80px; border-radius: 25px;
+            font-size: 8rem; box-shadow: 0 20px 0px #bdc3c7; margin: 40px 0; min-width: 600px; text-align: center; text-transform: uppercase;
         }
 
-        .subtitle { font-size: 1.5rem; letter-spacing: 2px; margin-bottom: 2rem; color: #fff; text-transform: uppercase; }
-
-        /* Teacher Area */
-        textarea {
-            background: rgba(255,255,255,0.9);
-            border: 5px solid var(--gold);
-            border-radius: 15px;
-            padding: 15px;
-            width: 400px;
-            height: 100px;
-            font-size: 1rem;
-            margin-bottom: 20px;
-        }
-
-        /* 3D Glossy Buttons */
+        /* Buttons */
         .btn {
-            padding: 15px 40px;
-            font-size: 1.5rem;
-            font-weight: 900;
-            text-transform: uppercase;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            color: white;
-            background: linear-gradient(to bottom, #f1c40f 0%, #d35400 100%);
-            box-shadow: 0 8px 0 #914500, 0 15px 20px rgba(0,0,0,0.4);
-            transition: all 0.1s;
-            position: relative;
-            overflow: hidden;
+            padding: 15px 45px; font-size: 1.5rem; font-weight: 900; border-radius: 50px; border: none; cursor: pointer; color: white;
+            background: linear-gradient(to bottom, #f1c40f 0%, #d35400 100%); box-shadow: 0 8px 0 #914500;
         }
-
-        .btn:after {
-            content: ''; position: absolute; top: 2px; left: 10%; width: 80%; height: 40%;
-            background: var(--gloss); border-radius: 40px;
-        }
-
         .btn:active { transform: translateY(4px); box-shadow: 0 4px 0 #914500; }
-
         .btn-correct { background: linear-gradient(to bottom, #2ecc71, #27ae60); box-shadow: 0 8px 0 #1e8449; }
         .btn-pass { background: linear-gradient(to bottom, #95a5a6, #7f8c8d); box-shadow: 0 8px 0 #566573; }
+        .btn-disabled { opacity: 0.5; cursor: not-allowed; filter: grayscale(1); }
 
-        /* Top HUD */
-        .hud {
-            position: absolute;
-            top: 40px;
-            width: 90%;
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 40px;
-            background: rgba(0,0,0,0.5);
-            border-radius: 100px;
-            border: 2px solid rgba(255,255,255,0.2);
-            box-sizing: border-box;
+        /* End Game Modal */
+        #end-modal {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); z-index: 100; display: none;
+            flex-direction: column; justify-content: center; align-items: center; text-align: center;
         }
+        #end-modal h2 { font-family: 'Luckiest Guy'; font-size: 10rem; color: #ff4757; margin: 0; }
+        #end-modal p { font-size: 3rem; margin: 20px 0; }
 
-        .hud div { font-size: 2rem; font-family: 'Luckiest Guy', sans-serif; color: var(--gold); }
-
-        /* The Giant Word Card */
-        .word-box {
-            background: white;
-            color: #222;
-            padding: 40px 100px;
-            border-radius: 20px;
-            font-size: 10rem;
-            box-shadow: 0 20px 0px #bdc3c7, 0 30px 50px rgba(0,0,0,0.5);
-            margin: 40px 0;
-            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            min-width: 500px;
-            text-align: center;
-        }
-
-        @keyframes popIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-
-        /* Timer Panic Mode */
         .panic { color: #ff4757 !important; animation: pulse 0.5s infinite; }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
-
-        .score-display { font-size: 2rem; color: #fff; margin-top: 20px; text-shadow: 2px 2px 0 #000; }
+        @keyframes pulse { 50% { transform: scale(1.1); } }
     </style>
 </head>
 <body>
@@ -142,15 +77,19 @@
     <!-- MENU -->
     <div id="menu-screen" class="screen active">
         <h1>PINOY HENYO</h1>
-        <p class="subtitle">Can you guess the word?</p>
-        <textarea id="teacher-input" placeholder="Type words (Comma separated)..."></textarea>
-        <button class="btn" onclick="startGame()">START SESSION</button>
+        <textarea id="teacher-input" placeholder="Enter words: Apple, Doctor, Paris, Swimming..." style="width:400px; height:80px; padding:10px; border-radius:10px; margin:20px;"></textarea>
+        <button class="btn" onclick="startGame()">START GAME</button>
     </div>
 
     <!-- GAME -->
     <div id="game-screen" class="screen">
         <div class="hud">
             <div id="category-display">CATEGORY: ???</div>
+            <div class="lives-container" id="lives-box">
+                <span class="heart" id="h1">❤</span>
+                <span class="heart" id="h2">❤</span>
+                <span class="heart" id="h3">❤</span>
+            </div>
             <div id="timer-display">02:00</div>
         </div>
         
@@ -158,13 +97,17 @@
 
         <div style="display: flex; gap: 30px;">
             <button class="btn btn-correct" onclick="handleCorrect()">CORRECT ✔</button>
-            <button class="btn btn-pass" onclick="handlePass()">PASS ⏭</button>
-            <button class="btn" style="background: #34495e; box-shadow: 0 8px 0 #1a252f;" onclick="togglePause()">⏸</button>
+            <button class="btn btn-pass" id="pass-btn" onclick="handlePass()">PASS ⏭</button>
         </div>
-
-        <div class="score-display">WORDS GUESSED: <span id="score" style="color: var(--gold);">0</span></div>
+        <div style="margin-top:20px; font-size: 2rem;">SCORE: <span id="score" style="color:var(--gold)">0</span></div>
     </div>
 
+    <!-- TIME'S UP MODAL -->
+    <div id="end-modal">
+        <h2 id="end-title">TIME'S UP!</h2>
+        <p>Total Score: <span id="final-score" style="color:var(--gold)">0</span></p>
+        <button class="btn" onclick="location.reload()">PLAY AGAIN</button>
+    </div>
 </div>
 
 <audio id="snd-start" src="start.mp3"></audio>
@@ -178,40 +121,35 @@
     let score = 0;
     let timer;
     let timeLeft = 120;
-    let isPaused = false;
+    let lives = 3;
 
-    async function fetchSmartCategory(word) {
-        document.getElementById('category-display').innerText = "CATEGORY: ...";
-        try {
-            const response = await fetch(`https://api.datamuse.com/words?rel_spc=${word}&max=1`);
-            const data = await response.json();
-            return (data.length > 0) ? data[0].word.toUpperCase() : "GENERAL";
-        } catch { return "GENERAL"; }
+    function getOfflineCategory(word) {
+        const doc = nlp(word);
+        if (doc.places().text()) return "PLACE";
+        if (doc.verbs().text()) return "ACTION";
+        if (doc.people().text()) return "PERSON";
+        return "OBJECT / THING";
     }
 
-    async function startGame() {
+    function startGame() {
         const input = document.getElementById('teacher-input').value;
-        if (!input) return alert("Enter words first!");
+        if (!input) return alert("Enter words!");
         words = input.split(',').map(w => w.trim());
         document.getElementById('snd-start').play();
         document.getElementById('menu-screen').classList.remove('active');
         document.getElementById('game-screen').classList.add('active');
-        await showWord();
+        showWord();
         startTimer();
     }
 
-    async function showWord() {
+    function showWord() {
         if (currentIndex < words.length) {
-            const wordDisplay = document.getElementById('word-display');
-            wordDisplay.style.animation = 'none';
-            wordDisplay.offsetHeight; // Trigger reflow
-            wordDisplay.style.animation = null;
-            
             const currentWord = words[currentIndex];
-            wordDisplay.innerText = currentWord;
-            const cat = await fetchSmartCategory(currentWord);
-            document.getElementById('category-display').innerText = "CATEGORY: " + cat;
-        } else { endGame(); }
+            document.getElementById('word-display').innerText = currentWord;
+            document.getElementById('category-display').innerText = "CATEGORY: " + getOfflineCategory(currentWord);
+        } else {
+            endGame("ALL WORDS DONE!");
+        }
     }
 
     function handleCorrect() {
@@ -222,39 +160,44 @@
     }
 
     function handlePass() {
-        document.getElementById('snd-pass').play();
-        nextWord();
+        if (lives > 0) {
+            document.getElementById('snd-pass').play();
+            document.getElementById('h' + lives).classList.add('lost');
+            lives--;
+            if (lives === 0) {
+                document.getElementById('pass-btn').classList.add('btn-disabled');
+                document.getElementById('pass-btn').disabled = true;
+            }
+            nextWord();
+        }
     }
 
-    async function nextWord() {
+    function nextWord() {
         currentIndex++;
-        await showWord();
+        showWord();
     }
 
     function startTimer() {
         timer = setInterval(() => {
-            if (!isPaused) {
-                timeLeft--;
-                const mins = Math.floor(timeLeft / 60);
-                const secs = timeLeft % 60;
-                const display = document.getElementById('timer-display');
-                display.innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-                
-                if (timeLeft === 10) {
-                    document.getElementById('snd-timer').play();
-                    display.classList.add('panic');
-                }
-                if (timeLeft <= 0) endGame();
+            timeLeft--;
+            const mins = Math.floor(timeLeft / 60);
+            const secs = timeLeft % 60;
+            const display = document.getElementById('timer-display');
+            display.innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            
+            if (timeLeft === 10) {
+                document.getElementById('snd-timer').play();
+                display.classList.add('panic');
             }
+            if (timeLeft <= 0) endGame("TIME'S UP!");
         }, 1000);
     }
 
-    function togglePause() { isPaused = !isPaused; }
-
-    function endGame() {
+    function endGame(reason) {
         clearInterval(timer);
-        alert("GAME OVER! SCORE: " + score);
-        location.reload();
+        document.getElementById('end-title').innerText = reason;
+        document.getElementById('final-score').innerText = score;
+        document.getElementById('end-modal').style.display = 'flex';
     }
 </script>
 
