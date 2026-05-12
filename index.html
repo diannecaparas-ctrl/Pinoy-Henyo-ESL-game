@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pinoy Henyo - Extreme Edition</title>
+    <title>Pinoy Henyo - Polished Edition</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Roboto+Condensed:wght@700&display=swap');
         :root { --gold: #f1c40f; --orange: #e67e22; --red: #e74c3c; --dark: #2c3e50; }
@@ -17,62 +17,58 @@
         .game-container {
             width: 95vw; height: 90vh; border: 12px solid var(--dark); border-radius: 50px;
             background: rgba(0, 0, 0, 0.15); position: relative; display: flex; flex-direction: column; 
-            justify-content: flex-start; align-items: center; box-shadow: inset 0 0 100px rgba(0,0,0,0.5);
-            padding-top: 40px; box-sizing: border-box;
+            justify-content: center; align-items: center; box-shadow: inset 0 0 100px rgba(0,0,0,0.5);
+            box-sizing: border-box;
         }
 
-        .screen { display: none; flex-direction: column; align-items: center; width: 100%; }
+        .screen { display: none; flex-direction: column; align-items: center; width: 100%; height: 100%; justify-content: center; }
         .active { display: flex; }
 
-        /* Setup Screen */
-        .setup-box { background: rgba(255,255,255,0.9); color: #333; padding: 20px; border-radius: 20px; width: 600px; max-height: 70vh; overflow-y: auto; }
-        .cat-group { margin-bottom: 10px; }
-        .cat-group label { font-weight: bold; color: var(--dark); display: block; font-size: 0.9rem; }
-        .cat-group input { width: 95%; padding: 8px; border: 2px solid #ddd; border-radius: 8px; }
+        /* Setup Screen Improvements */
+        .setup-box { background: rgba(255,255,255,0.9); color: #333; padding: 25px; border-radius: 20px; width: 600px; max-height: 60vh; overflow-y: auto; }
+        .cat-group { margin-bottom: 12px; }
+        .cat-group label { font-weight: bold; color: var(--dark); display: block; font-size: 1rem; margin-bottom: 5px; }
+        .cat-group input { width: 95%; padding: 10px; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem; }
 
-        /* HUD - No Overlap */
+        /* GAME LAYOUT - SPACED OUT */
+        #game-screen { gap: 20px; padding: 20px 0; }
+
         .hud {
-            width: 90%; height: 80px; display: flex; justify-content: space-between;
-            padding: 0 50px; background: rgba(0,0,0,0.85); border-radius: 100px; align-items: center;
-            margin-bottom: 30px; border: 2px solid rgba(255,255,255,0.1);
+            width: 90%; height: 70px; display: flex; justify-content: space-between;
+            padding: 0 40px; background: rgba(0,0,0,0.85); border-radius: 100px; align-items: center;
+            border: 2px solid rgba(255,255,255,0.1);
         }
-        .lives-container { display: flex; gap: 10px; font-size: 2.5rem; }
+        .lives-container { display: flex; gap: 8px; font-size: 2.2rem; }
         .heart { color: var(--red); text-shadow: 2px 2px #000; transition: 0.3s; }
         .heart.lost { opacity: 0; transform: scale(0); }
 
-        /* Word Card */
         .word-box {
-            background: #fff; color: #111; padding: 40px; border-radius: 35px;
-            width: 750px; height: 280px; display: flex; justify-content: center; align-items: center;
-            box-shadow: 0 20px 0px #bdc3c7; margin-bottom: 30px;
+            background: #fff; color: #111; padding: 20px; border-radius: 35px;
+            width: 700px; height: 260px; display: flex; justify-content: center; align-items: center;
+            box-shadow: 0 18px 0px #bdc3c7;
         }
-        #word-text { font-size: 8rem; text-align: center; text-transform: uppercase; font-weight: 900; }
+        #word-text { font-size: 8rem; text-align: center; text-transform: uppercase; font-weight: 900; line-height: 0.9; }
+
+        .controls { display: flex; gap: 25px; align-items: center; }
 
         /* PANIC MODE SHAKE */
         @keyframes shake {
             0% { transform: translate(1px, 1px) rotate(0deg); }
             10% { transform: translate(-1px, -2px) rotate(-1deg); }
-            20% { transform: translate(-3px, 0px) rotate(1deg); }
-            30% { transform: translate(3px, 2px) rotate(0deg); }
-            40% { transform: translate(1px, -1px) rotate(1deg); }
             50% { transform: translate(-1px, 2px) rotate(-1deg); }
-            60% { transform: translate(-3px, 1px) rotate(0deg); }
-            70% { transform: translate(3px, 1px) rotate(-1deg); }
-            80% { transform: translate(-1px, -1px) rotate(1deg); }
-            90% { transform: translate(1px, 2px) rotate(0deg); }
             100% { transform: translate(1px, -2px) rotate(-1deg); }
         }
-        .panic-shake { animation: shake 0.2s infinite !important; border-color: #ff4757 !important; }
-        .panic-text { color: #ff4757 !important; animation: pulse 0.5s infinite; }
-        @keyframes pulse { 50% { opacity: 0.5; } }
+        .panic-shake { animation: shake 0.2s infinite; }
+        .panic-text { color: #ff4757 !important; }
 
         /* Buttons */
         .btn {
-            padding: 18px 50px; font-size: 1.6rem; font-weight: 900; border-radius: 100px; border: none; cursor: pointer; color: white;
+            padding: 15px 45px; font-size: 1.4rem; font-weight: 900; border-radius: 100px; border: none; cursor: pointer; color: white;
             background: linear-gradient(to bottom, #f1c40f 0%, #d35400 100%); box-shadow: 0 8px 0 #914500; text-transform: uppercase;
         }
         .btn-green { background: linear-gradient(to bottom, #2ecc71, #27ae60); box-shadow: 0 8px 0 #1e8449; }
         .btn-red { background: linear-gradient(to bottom, #e74c3c, #c0392b); box-shadow: 0 8px 0 #962d22; }
+        .btn:active { transform: translateY(4px); box-shadow: 0 4px 0 #914500; }
 
         #end-modal {
             position: absolute; inset: 0; background: rgba(0,0,0,0.95); z-index: 200; 
@@ -85,7 +81,7 @@
 <div class="game-container" id="main-board">
     
     <div id="setup-screen" class="screen active">
-        <h1 style="font-family:'Luckiest Guy'; font-size:3rem; color:var(--gold);">TEACHER SETTINGS</h1>
+        <h1 style="font-family:'Luckiest Guy'; font-size:3.5rem; color:var(--gold); margin-bottom: 20px;">TEACHER SETTINGS</h1>
         <div class="setup-box">
             <div class="cat-group"><label>🦷 BODY PART</label><input type="text" class="save-data" data-cat="BODY PART"></div>
             <div class="cat-group"><label>🍔 FOOD</label><input type="text" class="save-data" data-cat="FOOD"></div>
@@ -94,20 +90,23 @@
             <div class="cat-group"><label>📍 PLACE</label><input type="text" class="save-data" data-cat="PLACE"></div>
             <div class="cat-group"><label>🏃 ACTION</label><input type="text" class="save-data" data-cat="ACTION"></div>
             <div class="cat-group"><label>💡 OBJECT</label><input type="text" class="save-data" data-cat="OBJECT"></div>
-            <div style="margin-top:20px; display:flex; gap:10px; justify-content: center;">
-                <button class="btn btn-green" onclick="saveAndEnter()">ENTER</button>
-                <button class="btn" style="background:#7f8c8d; box-shadow:0 8px 0 #2c3e50" onclick="resetMemory()">RESET</button>
-            </div>
+        </div>
+        <div style="margin-top:20px; display:flex; gap:15px;">
+            <button class="btn btn-green" onclick="saveAndEnter()">ENTER</button>
+            <button class="btn" style="background:#7f8c8d; box-shadow:0 8px 0 #2c3e50" onclick="resetMemory()">RESET</button>
         </div>
     </div>
 
     <div id="title-screen" class="screen">
         <h1 style="font-family:'Luckiest Guy'; font-size:10rem; color:var(--gold); margin:0; text-shadow: 10px 10px 0 #000;">PINOY HENYO</h1>
-        <button class="btn" style="margin-top:40px; font-size:3rem; padding: 20px 80px;" onclick="startCountdown()">START</button>
+        <div style="margin-top:30px; display:flex; gap:20px;">
+            <button class="btn" style="font-size:2.5rem; padding: 20px 70px;" onclick="startCountdown()">START</button>
+            <button class="btn" style="background:#7f8c8d; box-shadow:0 8px 0 #2c3e50" onclick="showScreen('setup-screen')">BACK</button>
+        </div>
     </div>
 
     <div id="countdown-screen" class="screen">
-        <h1 id="count-number" style="font-family:'Luckiest Guy'; font-size:15rem; color:var(--gold); text-shadow: 10px 10px 0 #000;">3</h1>
+        <h1 id="count-number" style="font-family:'Luckiest Guy'; font-size:18rem; color:var(--gold); text-shadow: 12px 12px 0 #000;">3</h1>
     </div>
 
     <div id="game-screen" class="screen">
@@ -118,20 +117,21 @@
                 <span class="heart" id="h2">❤</span>
                 <span class="heart" id="h3">❤</span>
             </div>
-            <div id="timer-display" style="font-size: 2.2rem; font-family:'Luckiest Guy';">2:00</div>
+            <div id="timer-display" style="font-size: 2.2rem; font-family:'Luckiest Guy'; color:white;">2:00</div>
         </div>
         
-        <div class="word-box"><div id="word-text">READY?</div></div>
+        <div class="word-box"><div id="word-text">...</div></div>
 
-        <div style="display:flex; gap:30px;">
+        <div class="controls">
             <button class="btn btn-green" onclick="handleCorrect()">CORRECT ✔</button>
             <button class="btn btn-red" onclick="handlePass()">PASS ⏭</button>
         </div>
-        <h2 style="margin-top:20px; font-size: 2rem;">SCORE: <span id="score" style="color:var(--gold)">0</span></h2>
+        
+        <h2 style="margin: 0; font-size: 1.8rem; font-family:'Luckiest Guy';">SCORE: <span id="score" style="color:var(--gold)">0</span></h2>
     </div>
 
     <div id="end-modal">
-        <h1 id="end-title" style="font-size:8rem; color:var(--red); font-family:'Luckiest Guy';"></h1>
+        <h1 id="end-title" style="font-size:7rem; color:var(--red); font-family:'Luckiest Guy'; text-align:center;"></h1>
         <p style="font-size:3rem">FINAL SCORE: <span id="final-score" style="color:var(--gold)">0</span></p>
         <button class="btn" onclick="location.reload()">RESTART</button>
     </div>
@@ -141,7 +141,9 @@
 <audio id="snd-pass" src="pass.mp3"></audio>
 <audio id="snd-timer" src="timer.mp3"></audio>
 <audio id="snd-321go" src="321go.mp3"></audio>
-<audio id="snd-over" src="start.mp3"></audio> <script>
+<audio id="snd-over" src="start.mp3"></audio>
+
+<script>
     let gameQueue = [];
     let currentIndex = 0;
     let score = 0;
@@ -163,8 +165,9 @@
     }
 
     function saveAndEnter() {
-        const inputs = document.querySelectorAll('.save-data');
-        inputs.forEach(input => localStorage.setItem('henyo_' + input.getAttribute('data-cat'), input.value));
+        document.querySelectorAll('.save-data').forEach(input => {
+            localStorage.setItem('henyo_' + input.getAttribute('data-cat'), input.value);
+        });
         showScreen('title-screen');
     }
 
@@ -174,18 +177,15 @@
 
     function startCountdown() {
         showScreen('countdown-screen');
-        document.getElementById('snd-321go').play();
+        const snd = document.getElementById('snd-321go');
+        snd.currentTime = 0; snd.play();
         let count = 3;
         const countEl = document.getElementById('count-number');
-        
         const countInterval = setInterval(() => {
             count--;
             if (count > 0) countEl.innerText = count;
             else if (count === 0) countEl.innerText = "GO!";
-            else {
-                clearInterval(countInterval);
-                prepareAndStart();
-            }
+            else { clearInterval(countInterval); prepareAndStart(); }
         }, 1000);
     }
 
@@ -198,7 +198,7 @@
                 });
             }
         });
-        if (gameQueue.length === 0) return location.reload();
+        if (gameQueue.length === 0) return showScreen('setup-screen');
         gameQueue.sort(() => Math.random() - 0.5);
         showScreen('game-screen');
         showWord();
@@ -212,7 +212,7 @@
             textEl.innerText = item.word;
             document.getElementById('category-display').innerText = "CATEGORY: " + item.cat;
             let fs = 8; textEl.style.fontSize = fs + "rem";
-            while ((textEl.scrollHeight > 250 || textEl.scrollWidth > 700) && fs > 2) {
+            while ((textEl.scrollHeight > 250 || textEl.scrollWidth > 680) && fs > 2) {
                 fs -= 0.5; textEl.style.fontSize = fs + "rem";
             }
         } else endGame("FINISHED!");
@@ -242,7 +242,6 @@
             let s = timeLeft % 60;
             const display = document.getElementById('timer-display');
             const board = document.getElementById('main-board');
-            
             display.innerText = `${m}:${s < 10 ? '0'+s : s}`;
             
             if (timeLeft === 10) {
@@ -258,9 +257,9 @@
         clearInterval(timer);
         document.getElementById('snd-over').play();
         document.getElementById('main-board').classList.remove('panic-shake');
+        document.getElementById('end-modal').style.display = 'flex';
         document.getElementById('end-title').innerText = msg;
         document.getElementById('final-score').innerText = score;
-        document.getElementById('end-modal').style.display = 'flex';
     }
 </script>
 </body>
