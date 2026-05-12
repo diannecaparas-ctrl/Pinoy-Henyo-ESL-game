@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pinoy Henyo - Professional Edition</title>
+    <title>Pinoy Henyo - Pro Teacher Edition</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Roboto+Condensed:wght@700&display=swap');
         :root { --gold: #f1c40f; --orange: #e67e22; --red: #e74c3c; --dark: #2c3e50; }
@@ -20,37 +20,41 @@
             justify-content: center; align-items: center; box-shadow: inset 0 0 100px rgba(0,0,0,0.5);
         }
 
-        .screen { display: none; flex-direction: column; align-items: center; width: 100%; animation: fadeIn 0.5s; }
+        .screen { display: none; flex-direction: column; align-items: center; width: 100%; animation: fadeIn 0.3s; }
         .active { display: flex; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* Setup Screen Styles */
-        .setup-box { background: rgba(255,255,255,0.9); color: #333; padding: 25px; border-radius: 20px; width: 600px; }
+        /* Setup Screen */
+        .setup-box { background: rgba(255,255,255,0.9); color: #333; padding: 20px; border-radius: 20px; width: 600px; max-height: 70vh; overflow-y: auto; }
         .cat-group { margin-bottom: 10px; }
-        .cat-group label { font-weight: bold; color: var(--dark); display: block; }
-        .cat-group input { width: 96%; padding: 8px; border: 2px solid #ddd; border-radius: 8px; }
+        .cat-group label { font-weight: bold; color: var(--dark); display: block; font-size: 0.9rem; }
+        .cat-group input { width: 95%; padding: 8px; border: 2px solid #ddd; border-radius: 8px; }
 
-        /* Game Display */
+        /* HUD - Fixed Layout to prevent overlap */
         .hud {
-            position: absolute; top: 30px; width: 92%; display: flex; justify-content: space-between;
-            padding: 20px 60px; background: rgba(0,0,0,0.8); border-radius: 100px; align-items: center;
+            width: 92%; display: flex; justify-content: space-between;
+            padding: 15px 50px; background: rgba(0,0,0,0.8); border-radius: 100px; align-items: center;
+            margin-bottom: 20px; /* Forces space between bar and word card */
         }
-        .lives-container { display: flex; gap: 15px; font-size: 3rem; }
-        .heart { color: var(--red); text-shadow: 3px 3px #000; transition: 0.4s; }
-        .heart.lost { filter: grayscale(1); transform: translateY(20px); opacity: 0; }
+        .lives-container { display: flex; gap: 10px; font-size: 2.5rem; }
+        .heart { color: var(--red); text-shadow: 2px 2px #000; }
+        .heart.lost { opacity: 0.2; transform: scale(0.5); filter: grayscale(1); transition: 0.4s; }
 
+        /* Word Card */
         .word-box {
             background: #fff; color: #111; padding: 40px; border-radius: 30px;
             width: 800px; height: 250px; display: flex; justify-content: center; align-items: center;
-            box-shadow: 0 20px 0px #bdc3c7; margin: 40px 0;
+            box-shadow: 0 20px 0px #bdc3c7; position: relative; z-index: 1;
         }
         #word-text { font-size: 8rem; text-align: center; text-transform: uppercase; }
 
+        /* Countdown Overlay */
+        #countdown-screen h1 { font-family: 'Luckiest Guy'; font-size: 15rem; color: var(--gold); text-shadow: 10px 10px 0 #000; }
+
         .btn {
-            padding: 18px 50px; font-size: 1.6rem; font-weight: 900; border-radius: 100px; border: none; cursor: pointer; color: white;
+            padding: 15px 45px; font-size: 1.5rem; font-weight: 900; border-radius: 100px; border: none; cursor: pointer; color: white;
             background: linear-gradient(to bottom, #f1c40f 0%, #d35400 100%); box-shadow: 0 8px 0 #914500; text-transform: uppercase;
         }
-        .btn-blue { background: #3498db; box-shadow: 0 8px 0 #2980b9; }
         .btn-grey { background: #7f8c8d; box-shadow: 0 8px 0 #2c3e50; }
 
         #end-modal {
@@ -63,17 +67,10 @@
 
 <div class="game-container">
     
-    <!-- PAGE 1: TITLE SCREEN -->
-    <div id="title-screen" class="screen active">
-        <h1 style="font-family:'Luckiest Guy'; font-size:10rem; color:var(--gold); margin:0; text-shadow: 10px 10px 0 #000;">PINOY HENYO</h1>
-        <p style="font-size: 2rem; letter-spacing: 5px; margin-bottom: 40px;">CLASSROOM EDITION</p>
-        <button class="btn" onclick="showScreen('dashboard-screen')">ENTER DASHBOARD</button>
-    </div>
-
-    <!-- PAGE 2: TEACHER DASHBOARD (MEMORY) -->
-    <div id="dashboard-screen" class="screen">
-        <h1 style="font-family:'Luckiest Guy'; font-size:3rem; color:var(--gold);">TEACHER SETTINGS</h1>
+    <div id="setup-screen" class="screen active">
+        <h1 style="font-family:'Luckiest Guy'; font-size:3rem; color:var(--gold); margin:10px;">TEACHER SETTINGS</h1>
         <div class="setup-box">
+            <div class="cat-group"><label>🦷 BODY PART</label><input type="text" class="save-data" data-cat="BODY PART"></div>
             <div class="cat-group"><label>🍔 FOOD</label><input type="text" class="save-data" data-cat="FOOD"></div>
             <div class="cat-group"><label>👮 JOB</label><input type="text" class="save-data" data-cat="JOB"></div>
             <div class="cat-group"><label>🦁 ANIMAL</label><input type="text" class="save-data" data-cat="ANIMAL"></div>
@@ -81,45 +78,54 @@
             <div class="cat-group"><label>🏃 ACTION</label><input type="text" class="save-data" data-cat="ACTION"></div>
             <div class="cat-group"><label>💡 OBJECT</label><input type="text" class="save-data" data-cat="OBJECT"></div>
             <div style="margin-top:20px; display:flex; gap:10px; justify-content: center;">
-                <button class="btn" onclick="prepareGame()">START GAME</button>
+                <button class="btn" onclick="saveAndEnter()">ENTER</button>
                 <button class="btn btn-grey" onclick="resetMemory()">RESET WORDS</button>
-                <button class="btn btn-blue" onclick="showScreen('title-screen')">BACK</button>
             </div>
         </div>
     </div>
 
-    <!-- PAGE 3: GAME SCREEN -->
+    <div id="title-screen" class="screen">
+        <h1 style="font-family:'Luckiest Guy'; font-size:10rem; color:var(--gold); margin:0; text-shadow: 10px 10px 0 #000;">PINOY HENYO</h1>
+        <p style="font-size: 2rem; letter-spacing: 5px; margin-bottom: 40px;">CLASSROOM EDITION</p>
+        <div style="display:flex; gap:20px;">
+            <button class="btn" onclick="startCountdown()">START GAME</button>
+            <button class="btn btn-grey" onclick="showScreen('setup-screen')">SETTINGS</button>
+        </div>
+    </div>
+
+    <div id="countdown-screen" class="screen">
+        <h1 id="count-number">3</h1>
+    </div>
+
     <div id="game-screen" class="screen">
         <div class="hud">
-            <div id="category-display" style="font-size: 2rem; font-family: 'Luckiest Guy'; color: var(--gold);">CATEGORY: ???</div>
+            <div id="category-display" style="font-size: 1.8rem; font-family: 'Luckiest Guy'; color: var(--gold);">CATEGORY: ???</div>
             <div class="lives-container">
                 <span class="heart" id="h1">❤</span>
                 <span class="heart" id="h2">❤</span>
                 <span class="heart" id="h3">❤</span>
             </div>
-            <div id="timer-display" style="font-size: 2.5rem; font-family: 'Luckiest Guy';">02:00</div>
+            <div id="timer-display" style="font-size: 2.2rem; font-family: 'Luckiest Guy';">02:00</div>
         </div>
         
-        <div class="word-box"><div id="word-text">READY?</div></div>
+        <div class="word-box"><div id="word-text">...</div></div>
 
-        <div style="display:flex; gap:30px;">
+        <div style="display:flex; gap:30px; margin-top:20px;">
             <button class="btn" style="background:#2ecc71; box-shadow:0 8px 0 #27ae60" onclick="handleCorrect()">CORRECT ✔</button>
             <button class="btn" style="background:#e74c3c; box-shadow:0 8px 0 #c0392b" onclick="handlePass()">PASS ⏭</button>
         </div>
         <h2 style="margin-top:20px">SCORE: <span id="score" style="color:var(--gold)">0</span></h2>
     </div>
 
-    <!-- END MODAL -->
     <div id="end-modal">
-        <h1 id="end-title" style="font-size:8rem; color:var(--red); font-family:'Luckiest Guy'; text-align:center;"></h1>
+        <h1 id="end-title" style="font-size:8rem; color:var(--red); font-family:'Luckiest Guy';"></h1>
         <p style="font-size:3rem">FINAL SCORE: <span id="final-score" style="color:var(--gold)">0</span></p>
         <button class="btn" onclick="location.reload()">RESTART SESSION</button>
     </div>
 </div>
 
-<!-- Sounds -->
 <audio id="snd-start" src="start.mp3"></audio>
-<audio id="snd-correct" src="correct.mp3"></audio>
+<audio id="snd-nice" src="nice.mp3"></audio> <audio id="snd-correct" src="correct.mp3"></audio>
 <audio id="snd-pass" src="pass.mp3"></audio>
 <audio id="snd-timer" src="timer.mp3"></audio>
 
@@ -131,7 +137,6 @@
     let timer;
     let timeLeft = 120;
 
-    // Load Memory on Startup
     window.onload = function() {
         const inputs = document.querySelectorAll('.save-data');
         inputs.forEach(input => {
@@ -140,34 +145,58 @@
         });
     };
 
-    function showScreen(screenId) {
+    function showScreen(id) {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.getElementById(screenId).classList.add('active');
+        document.getElementById(id).classList.add('active');
+    }
+
+    function saveAndEnter() {
+        const inputs = document.querySelectorAll('.save-data');
+        inputs.forEach(input => {
+            localStorage.setItem('henyo_' + input.getAttribute('data-cat'), input.value);
+        });
+        showScreen('title-screen');
     }
 
     function resetMemory() {
-        if(confirm("Clear all saved words?")) {
-            localStorage.clear();
-            location.reload();
-        }
+        if(confirm("Clear all words?")) { localStorage.clear(); location.reload(); }
     }
 
-    function prepareGame() {
+    function startCountdown() {
+        document.getElementById('snd-nice').play(); // Plays "Nice" on start button hit
+        showScreen('countdown-screen');
+        let count = 3;
+        const countEl = document.getElementById('count-number');
+        
+        const countInterval = setInterval(() => {
+            count--;
+            if (count > 0) {
+                countEl.innerText = count;
+            } else if (count === 0) {
+                countEl.innerText = "GO!";
+            } else {
+                clearInterval(countInterval);
+                prepareAndStart();
+            }
+        }, 1000);
+    }
+
+    function prepareAndStart() {
         gameQueue = [];
         const inputs = document.querySelectorAll('.save-data');
-        
         inputs.forEach(input => {
-            const cat = input.getAttribute('data-cat');
-            const val = input.value;
-            localStorage.setItem('henyo_' + cat, val);
-            if (val) {
-                val.split(',').forEach(w => {
-                    if (w.trim()) gameQueue.push({ word: w.trim(), cat: cat });
+            if (input.value) {
+                input.value.split(',').forEach(w => {
+                    if (w.trim()) gameQueue.push({ word: w.trim(), cat: input.getAttribute('data-cat') });
                 });
             }
         });
 
-        if (gameQueue.length === 0) return alert("Please enter some words!");
+        if (gameQueue.length === 0) {
+            alert("No words found! Go to settings.");
+            showScreen('setup-screen');
+            return;
+        }
         
         gameQueue.sort(() => Math.random() - 0.5);
         showScreen('game-screen');
@@ -182,7 +211,6 @@
             textEl.innerText = item.word;
             document.getElementById('category-display').innerText = "CATEGORY: " + item.cat;
             
-            // Auto-font sizing
             let fs = 8; textEl.style.fontSize = fs + "rem";
             while ((textEl.scrollHeight > 250 || textEl.scrollWidth > 750) && fs > 2) {
                 fs -= 0.5; textEl.style.fontSize = fs + "rem";
@@ -201,12 +229,8 @@
         document.getElementById('snd-pass').play();
         document.getElementById('h' + lives).classList.add('lost');
         lives--;
-
-        if (lives === 0) {
-            endGame("GAME OVER!"); 
-        } else {
-            next();
-        }
+        if (lives === 0) endGame("GAME OVER!"); 
+        else next();
     }
 
     function next() { currentIndex++; showWord(); }
@@ -224,9 +248,7 @@
 
     function endGame(msg) {
         clearInterval(timer);
-        if (msg === "GAME OVER!") {
-            document.getElementById('snd-start').play(); // Start sound plays for Game Over
-        }
+        if (msg === "GAME OVER!") document.getElementById('snd-start').play();
         document.getElementById('end-title').innerText = msg;
         document.getElementById('final-score').innerText = score;
         document.getElementById('end-modal').style.display = 'flex';
