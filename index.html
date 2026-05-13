@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pinoy Henyo - Ultimate Edition</title>
+    <title>Pinoy Henyo - Hearts Edition</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Roboto+Condensed:wght@700&display=swap');
-        :root { --gold: #f1c40f; --orange: #e67e22; --red: #e74c3c; --blue: #1e5ba0; --dark: #2c3e50; }
+        :root { --gold: #f1c40f; --orange: #e67e22; --red: #e74c3c; --dark: #2c3e50; }
 
         body {
             font-family: 'Roboto Condensed', sans-serif;
@@ -24,7 +24,7 @@
         .screen { display: none; flex-direction: column; align-items: center; width: 100%; height: 100%; justify-content: center; }
         .active { display: flex; }
 
-        /* 2-COLUMN TEACHER DASHBOARD */
+        /* TEACHER DASHBOARD (2-COLUMN) */
         .setup-box { 
             background: rgba(255,255,255,0.9); padding: 20px; border-radius: 20px; 
             width: 850px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px;
@@ -32,25 +32,26 @@
         .cat-group label { font-weight: bold; color: var(--dark); display: block; font-size: 0.9rem; margin-bottom: 3px; }
         .cat-group input { width: 92%; padding: 8px; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem; }
 
-        /* STAMP TITLE SCREEN */
-        #title-screen { background: var(--blue); }
-        .stamp-container {
-            background-color: var(--gold); padding: 15px; position: relative;
-            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.3));
-            -webkit-mask-image: radial-gradient(circle, transparent 8px, black 9px);
-            -webkit-mask-size: 30px 30px;
-            -webkit-mask-position: -15px -15px;
+        /* TITLE PAGE (As seen in image_648bfe.jpg) */
+        #title-screen h1 {
+            font-family: 'Luckiest Guy', cursive;
+            font-size: 10rem;
+            color: var(--gold);
+            text-shadow: 8px 8px 0px #000;
+            margin: 0 0 30px 0;
+            letter-spacing: 5px;
         }
-        .stamp-inner { background-color: #c0392b; padding: 40px 80px; display: flex; flex-direction: column; align-items: center; }
-        .text-pinoy { font-family: 'Luckiest Guy'; font-size: 8rem; color: white; margin: 0; line-height: 0.8; }
-        .text-henyo { font-family: 'Luckiest Guy'; font-size: 9rem; color: var(--gold); margin: 0; line-height: 0.8; }
 
-        /* GAME LAYOUT */
+        /* GAME HUD & HEARTS (As seen in image_6488b8.jpg) */
         #game-screen { gap: 20px; }
         .hud {
-            width: 90%; height: 70px; display: flex; justify-content: space-between;
+            width: 90%; height: 75px; display: flex; justify-content: space-between;
             padding: 0 40px; background: rgba(0,0,0,0.85); border-radius: 100px; align-items: center;
         }
+        .hearts-container { display: flex; gap: 10px; font-size: 2.5rem; }
+        .heart { color: var(--red); text-shadow: 2px 2px #000; transition: transform 0.3s ease; }
+        .heart.lost { opacity: 0.2; transform: scale(0.8); }
+
         .word-box {
             background: #fff; color: #111; border-radius: 35px;
             width: 700px; height: 260px; display: flex; justify-content: center; align-items: center;
@@ -60,17 +61,13 @@
 
         /* BUTTONS */
         .btn {
-            padding: 12px 35px; font-size: 1.2rem; font-weight: 900; border-radius: 100px; border: none; cursor: pointer; color: white;
-            background: linear-gradient(to bottom, #f1c40f 0%, #d35400 100%); box-shadow: 0 6px 0 #914500; text-transform: uppercase;
+            padding: 15px 50px; font-size: 1.5rem; font-weight: 900; border-radius: 100px; border: none; cursor: pointer; color: white;
+            background: linear-gradient(to bottom, #f1c40f 0%, #d35400 100%); box-shadow: 0 8px 0 #914500; text-transform: uppercase;
         }
-        .btn-green { background: linear-gradient(to bottom, #2ecc71, #27ae60); box-shadow: 0 6px 0 #1e8449; }
-        .btn-red { background: linear-gradient(to bottom, #e74c3c, #c0392b); box-shadow: 0 6px 0 #962d22; }
-        .btn-grey { background: #7f8c8d; box-shadow: 0 6px 0 #2c3e50; }
-        .btn:active { transform: translateY(3px); box-shadow: 0 3px 0 #914500; }
-
-        /* PANIC SHAKE */
-        @keyframes shake { 0%, 100% {transform: translate(0,0)} 25% {transform: translate(2px,2px)} 75% {transform: translate(-2px,-2px)} }
-        .panic-shake { animation: shake 0.1s infinite; }
+        .btn-green { background: linear-gradient(to bottom, #2ecc71, #27ae60); box-shadow: 0 8px 0 #1e8449; }
+        .btn-red { background: linear-gradient(to bottom, #e74c3c, #c0392b); box-shadow: 0 8px 0 #962d22; }
+        .btn-grey { background: #7f8c8d; box-shadow: 0 8px 0 #2c3e50; }
+        .btn:active { transform: translateY(4px); box-shadow: 0 4px 0 #914500; }
 
         #end-modal {
             position: absolute; inset: 0; background: rgba(0,0,0,0.95); z-index: 200; 
@@ -82,7 +79,7 @@
 
 <div class="game-container" id="main-board">
     
-    <!-- 1. TEACHER DASHBOARD (2-COLUMN) -->
+    <!-- 1. TEACHER DASHBOARD -->
     <div id="setup-screen" class="screen active">
         <h1 style="font-family:'Luckiest Guy'; font-size:2.5rem; color:var(--gold); margin-bottom:10px;">TEACHER SETTINGS</h1>
         <div class="setup-box">
@@ -95,7 +92,6 @@
             <div class="cat-group"><label>🦁 ANIMAL</label><input type="text" class="save-data" data-cat="ANIMAL"></div>
             <div class="cat-group"><label>🎆 EVENTS</label><input type="text" class="save-data" data-cat="EVENTS"></div>
         </div>
-        
         <div style="margin-top:20px; display:flex; align-items:center; gap:25px;">
             <div style="background:rgba(0,0,0,0.3); padding:10px 20px; border-radius:50px;">
                 <span>🔊 VOL:</span>
@@ -106,17 +102,12 @@
         </div>
     </div>
 
-    <!-- 2. STAMP TITLE PAGE -->
+    <!-- 2. TITLE PAGE -->
     <div id="title-screen" class="screen">
-        <div class="stamp-container">
-            <div class="stamp-inner">
-                <p class="text-pinoy">PINOY</p>
-                <p class="text-henyo">HENYO</p>
-            </div>
-        </div>
-        <div style="margin-top:40px; display:flex; gap:20px;">
-            <button class="btn" style="font-size:2rem; padding: 15px 60px;" onclick="startCountdown()">START GAME</button>
-            <button class="btn btn-grey" onclick="showScreen('setup-screen')">SETTINGS</button>
+        <h1>PINOY HENYO</h1>
+        <div style="display:flex; gap:20px;">
+            <button class="btn" onclick="startCountdown()">START</button>
+            <button class="btn btn-grey" onclick="showScreen('setup-screen')">BACK</button>
         </div>
     </div>
 
@@ -129,6 +120,11 @@
     <div id="game-screen" class="screen">
         <div class="hud">
             <div id="category-display" style="font-size: 1.5rem; font-family:'Luckiest Guy'; color:var(--gold);">CATEGORY: ???</div>
+            <div class="hearts-container">
+                <span class="heart" id="life1">❤</span>
+                <span class="heart" id="life2">❤</span>
+                <span class="heart" id="life3">❤</span>
+            </div>
             <div id="timer-display" style="font-size: 2rem; font-family:'Luckiest Guy'; color:white;">2:00</div>
         </div>
         <div class="word-box"><div id="word-text">...</div></div>
@@ -142,7 +138,7 @@
     <!-- END MODAL -->
     <div id="end-modal">
         <h1 id="end-title" style="font-size:6rem; color:var(--gold); font-family:'Luckiest Guy';"></h1>
-        <p style="font-size:2.5rem">FINAL SCORE: <span id="final-score">0</span></p>
+        <p style="font-size:2.5rem">FINAL SCORE: <span id="final-score" style="color:var(--gold)">0</span></p>
         <button class="btn" onclick="location.reload()">PLAY AGAIN</button>
     </div>
 </div>
@@ -155,21 +151,21 @@
 <audio id="snd-over" src="start.mp3"></audio>
 
 <script>
-    let gameQueue = [], currentIndex = 0, score = 0, timer, timeLeft = 120, vol = 0.5;
+    let gameQueue = [], currentIndex = 0, score = 0, lives = 3, timer, timeLeft = 120;
 
     window.onload = function() {
         document.querySelectorAll('.save-data').forEach(input => {
             input.value = localStorage.getItem('henyo_' + input.dataset.cat) || "";
         });
-        vol = localStorage.getItem('henyo_vol') || 0.5;
+        const vol = localStorage.getItem('henyo_vol') || 0.5;
         document.getElementById('vol-slider').value = vol;
         updateVolume();
     };
 
     function updateVolume() {
-        vol = document.getElementById('vol-slider').value;
-        localStorage.setItem('henyo_vol', vol);
-        document.querySelectorAll('audio').forEach(a => a.volume = vol);
+        const v = document.getElementById('vol-slider').value;
+        localStorage.setItem('henyo_vol', v);
+        document.querySelectorAll('audio').forEach(a => a.volume = v);
     }
 
     function showScreen(id) {
@@ -212,7 +208,6 @@
         });
         if(!gameQueue.length) return showScreen('setup-screen');
         
-        // Fisher-Yates Shuffle
         for (let i = gameQueue.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [gameQueue[i], gameQueue[j]] = [gameQueue[j], gameQueue[i]];
@@ -228,7 +223,7 @@
             const item = gameQueue[currentIndex];
             document.getElementById('word-text').innerText = item.w;
             document.getElementById('category-display').innerText = "CATEGORY: " + item.c;
-        } else endGame(true); // Trigger Finish Audio
+        } else endGame("FINISHED"); 
     }
 
     function handleCorrect() {
@@ -240,7 +235,12 @@
 
     function handlePass() {
         document.getElementById('snd-pass').play();
-        next();
+        const heartEl = document.getElementById('life' + lives);
+        if(heartEl) heartEl.classList.add('lost');
+        lives--;
+        
+        if(lives <= 0) endGame("OUT OF LIVES");
+        else next();
     }
 
     function next() { currentIndex++; showWord(); }
@@ -250,26 +250,20 @@
             timeLeft--;
             let m = Math.floor(timeLeft/60), s = timeLeft%60;
             document.getElementById('timer-display').innerText = `${m}:${s<10?'0'+s:s}`;
-            if(timeLeft === 10) {
-                document.getElementById('snd-timer').play();
-                document.getElementById('main-board').classList.add('panic-shake');
-            }
-            if(timeLeft <= 0) endGame(false);
+            if(timeLeft === 10) document.getElementById('snd-timer').play();
+            if(timeLeft <= 0) endGame("TIME'S UP");
         }, 1000);
     }
 
-    function endGame(isFinish) {
+    function endGame(reason) {
         clearInterval(timer);
-        document.getElementById('main-board').classList.remove('panic-shake');
-        
-        if(isFinish) {
+        if(reason === "FINISHED") {
             document.getElementById('snd-finish').play();
             document.getElementById('end-title').innerText = "EXCELLENT!";
         } else {
             document.getElementById('snd-over').play();
-            document.getElementById('end-title').innerText = "TIME'S UP!";
+            document.getElementById('end-title').innerText = reason;
         }
-        
         document.getElementById('end-modal').style.display = 'flex';
         document.getElementById('final-score').innerText = score;
     }
