@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pinoy Henyo - Polished Edition</title>
+    <title>Pinoy Henyo - Ultimate Edition</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Roboto+Condensed:wght@700&display=swap');
         :root { --gold: #f1c40f; --orange: #e67e22; --red: #e74c3c; --dark: #2c3e50; }
@@ -24,13 +24,17 @@
         .screen { display: none; flex-direction: column; align-items: center; width: 100%; height: 100%; justify-content: center; }
         .active { display: flex; }
 
-        /* Setup Screen Improvements */
-        .setup-box { background: rgba(255,255,255,0.9); color: #333; padding: 25px; border-radius: 20px; width: 600px; max-height: 60vh; overflow-y: auto; }
+        /* Settings Improvements */
+        .setup-box { background: rgba(255,255,255,0.9); color: #333; padding: 25px; border-radius: 20px; width: 600px; max-height: 55vh; overflow-y: auto; }
         .cat-group { margin-bottom: 12px; }
         .cat-group label { font-weight: bold; color: var(--dark); display: block; font-size: 1rem; margin-bottom: 5px; }
         .cat-group input { width: 95%; padding: 10px; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem; }
 
-        /* GAME LAYOUT - SPACED OUT */
+        /* Volume Control UI */
+        .volume-panel { margin-top: 15px; background: rgba(0,0,0,0.2); padding: 10px 20px; border-radius: 50px; display: flex; align-items: center; gap: 15px; }
+        input[type=range] { cursor: pointer; accent-color: var(--gold); }
+
+        /* GAME LAYOUT */
         #game-screen { gap: 20px; padding: 20px 0; }
 
         .hud {
@@ -51,24 +55,21 @@
 
         .controls { display: flex; gap: 25px; align-items: center; }
 
-        /* PANIC MODE SHAKE */
+        /* PANIC MODE */
         @keyframes shake {
             0% { transform: translate(1px, 1px) rotate(0deg); }
             10% { transform: translate(-1px, -2px) rotate(-1deg); }
-            50% { transform: translate(-1px, 2px) rotate(-1deg); }
             100% { transform: translate(1px, -2px) rotate(-1deg); }
         }
         .panic-shake { animation: shake 0.2s infinite; }
         .panic-text { color: #ff4757 !important; }
 
-        /* Buttons */
         .btn {
             padding: 15px 45px; font-size: 1.4rem; font-weight: 900; border-radius: 100px; border: none; cursor: pointer; color: white;
             background: linear-gradient(to bottom, #f1c40f 0%, #d35400 100%); box-shadow: 0 8px 0 #914500; text-transform: uppercase;
         }
         .btn-green { background: linear-gradient(to bottom, #2ecc71, #27ae60); box-shadow: 0 8px 0 #1e8449; }
         .btn-red { background: linear-gradient(to bottom, #e74c3c, #c0392b); box-shadow: 0 8px 0 #962d22; }
-        .btn:active { transform: translateY(4px); box-shadow: 0 4px 0 #914500; }
 
         #end-modal {
             position: absolute; inset: 0; background: rgba(0,0,0,0.95); z-index: 200; 
@@ -80,8 +81,9 @@
 
 <div class="game-container" id="main-board">
     
+    <!-- 1. TEACHER DASHBOARD -->
     <div id="setup-screen" class="screen active">
-        <h1 style="font-family:'Luckiest Guy'; font-size:3.5rem; color:var(--gold); margin-bottom: 20px;">TEACHER SETTINGS</h1>
+        <h1 style="font-family:'Luckiest Guy'; font-size:3rem; color:var(--gold); margin-bottom: 10px;">TEACHER SETTINGS</h1>
         <div class="setup-box">
             <div class="cat-group"><label>🦷 BODY PART</label><input type="text" class="save-data" data-cat="BODY PART"></div>
             <div class="cat-group"><label>🍔 FOOD</label><input type="text" class="save-data" data-cat="FOOD"></div>
@@ -91,12 +93,19 @@
             <div class="cat-group"><label>🏃 ACTION</label><input type="text" class="save-data" data-cat="ACTION"></div>
             <div class="cat-group"><label>💡 OBJECT</label><input type="text" class="save-data" data-cat="OBJECT"></div>
         </div>
+        
+        <div class="volume-panel">
+            <span>🔊 Volume:</span>
+            <input type="range" id="vol-slider" min="0" max="1" step="0.1" value="0.5" onchange="updateVolume()">
+        </div>
+
         <div style="margin-top:20px; display:flex; gap:15px;">
             <button class="btn btn-green" onclick="saveAndEnter()">ENTER</button>
             <button class="btn" style="background:#7f8c8d; box-shadow:0 8px 0 #2c3e50" onclick="resetMemory()">RESET</button>
         </div>
     </div>
 
+    <!-- 2. TITLE PAGE -->
     <div id="title-screen" class="screen">
         <h1 style="font-family:'Luckiest Guy'; font-size:10rem; color:var(--gold); margin:0; text-shadow: 10px 10px 0 #000;">PINOY HENYO</h1>
         <div style="margin-top:30px; display:flex; gap:20px;">
@@ -105,10 +114,12 @@
         </div>
     </div>
 
+    <!-- 3. COUNTDOWN -->
     <div id="countdown-screen" class="screen">
         <h1 id="count-number" style="font-family:'Luckiest Guy'; font-size:18rem; color:var(--gold); text-shadow: 12px 12px 0 #000;">3</h1>
     </div>
 
+    <!-- 4. GAME SCREEN -->
     <div id="game-screen" class="screen">
         <div class="hud">
             <div id="category-display" style="font-size: 1.8rem; font-family:'Luckiest Guy'; color:var(--gold);">CATEGORY: ???</div>
@@ -130,6 +141,7 @@
         <h2 style="margin: 0; font-size: 1.8rem; font-family:'Luckiest Guy';">SCORE: <span id="score" style="color:var(--gold)">0</span></h2>
     </div>
 
+    <!-- END MODAL -->
     <div id="end-modal">
         <h1 id="end-title" style="font-size:7rem; color:var(--red); font-family:'Luckiest Guy'; text-align:center;"></h1>
         <p style="font-size:3rem">FINAL SCORE: <span id="final-score" style="color:var(--gold)">0</span></p>
@@ -137,6 +149,7 @@
     </div>
 </div>
 
+<!-- Audio Assets -->
 <audio id="snd-correct" src="correct.mp3"></audio>
 <audio id="snd-pass" src="pass.mp3"></audio>
 <audio id="snd-timer" src="timer.mp3"></audio>
@@ -150,6 +163,7 @@
     let lives = 3;
     let timer;
     let timeLeft = 120;
+    let globalVolume = 0.5;
 
     window.onload = function() {
         const inputs = document.querySelectorAll('.save-data');
@@ -157,7 +171,20 @@
             const savedValue = localStorage.getItem('henyo_' + input.getAttribute('data-cat'));
             if (savedValue) input.value = savedValue;
         });
+        
+        const savedVol = localStorage.getItem('henyo_vol');
+        if(savedVol) {
+            globalVolume = savedVol;
+            document.getElementById('vol-slider').value = savedVol;
+        }
+        updateVolume();
     };
+
+    function updateVolume() {
+        globalVolume = document.getElementById('vol-slider').value;
+        localStorage.setItem('henyo_vol', globalVolume);
+        document.querySelectorAll('audio').forEach(a => a.volume = globalVolume);
+    }
 
     function showScreen(id) {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -193,13 +220,23 @@
         gameQueue = [];
         document.querySelectorAll('.save-data').forEach(input => {
             if (input.value) {
+                const category = input.getAttribute('data-cat');
                 input.value.split(',').forEach(w => {
-                    if (w.trim()) gameQueue.push({ word: w.trim(), cat: input.getAttribute('data-cat') });
+                    if (w.trim()) {
+                        gameQueue.push({ word: w.trim(), cat: category });
+                    }
                 });
             }
         });
+
         if (gameQueue.length === 0) return showScreen('setup-screen');
-        gameQueue.sort(() => Math.random() - 0.5);
+        
+        // FISHER-YATES SHUFFLE: Keeps word and its specific category together
+        for (let i = gameQueue.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [gameQueue[i], gameQueue[j]] = [gameQueue[j], gameQueue[i]];
+        }
+
         showScreen('game-screen');
         showWord();
         startTimer();
@@ -211,6 +248,8 @@
             const textEl = document.getElementById('word-text');
             textEl.innerText = item.word;
             document.getElementById('category-display').innerText = "CATEGORY: " + item.cat;
+            
+            // Dynamic Font Sizing
             let fs = 8; textEl.style.fontSize = fs + "rem";
             while ((textEl.scrollHeight > 250 || textEl.scrollWidth > 680) && fs > 2) {
                 fs -= 0.5; textEl.style.fontSize = fs + "rem";
