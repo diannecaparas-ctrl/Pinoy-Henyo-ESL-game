@@ -6,7 +6,7 @@
     <title>Pinoy Henyo - Ultimate Edition</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Roboto+Condensed:wght@700&display=swap');
-        :root { --gold: #f1c40f; --orange: #e67e22; --red: #e74c3c; --dark: #2c3e50; }
+        :root { --gold: #f1c40f; --orange: #e67e22; --red: #e74c3c; --blue: #1e5ba0; --dark: #2c3e50; }
 
         body {
             font-family: 'Roboto Condensed', sans-serif;
@@ -24,52 +24,53 @@
         .screen { display: none; flex-direction: column; align-items: center; width: 100%; height: 100%; justify-content: center; }
         .active { display: flex; }
 
-        /* Settings Improvements */
-        .setup-box { background: rgba(255,255,255,0.9); color: #333; padding: 25px; border-radius: 20px; width: 600px; max-height: 55vh; overflow-y: auto; }
-        .cat-group { margin-bottom: 12px; }
-        .cat-group label { font-weight: bold; color: var(--dark); display: block; font-size: 1rem; margin-bottom: 5px; }
-        .cat-group input { width: 95%; padding: 10px; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem; }
+        /* 2-COLUMN TEACHER DASHBOARD */
+        .setup-box { 
+            background: rgba(255,255,255,0.9); padding: 25px; border-radius: 20px; 
+            width: 800px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px;
+        }
+        .cat-group label { font-weight: bold; color: var(--dark); display: block; font-size: 0.9rem; margin-bottom: 3px; }
+        .cat-group input { width: 90%; padding: 8px; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem; }
 
-        /* Volume Control UI */
-        .volume-panel { margin-top: 15px; background: rgba(0,0,0,0.2); padding: 10px 20px; border-radius: 50px; display: flex; align-items: center; gap: 15px; }
-        input[type=range] { cursor: pointer; accent-color: var(--gold); }
+        /* STAMP TITLE SCREEN (From image_7237a1.jpg) */
+        #title-screen { background: var(--blue); }
+        .stamp-container {
+            background-color: var(--gold); padding: 15px; position: relative;
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.3));
+            -webkit-mask-image: radial-gradient(circle, transparent 8px, black 9px);
+            -webkit-mask-size: 30px 30px;
+            -webkit-mask-position: -15px -15px;
+        }
+        .stamp-inner { background-color: #c0392b; padding: 40px 80px; display: flex; flex-direction: column; align-items: center; }
+        .text-pinoy { font-family: 'Luckiest Guy'; font-size: 8rem; color: white; margin: 0; line-height: 0.8; }
+        .text-henyo { font-family: 'Luckiest Guy'; font-size: 9rem; color: var(--gold); margin: 0; line-height: 0.8; }
 
-        /* GAME LAYOUT */
-        #game-screen { gap: 20px; padding: 20px 0; }
-
+        /* GAME HUD & CARD */
+        #game-screen { gap: 20px; }
         .hud {
             width: 90%; height: 70px; display: flex; justify-content: space-between;
             padding: 0 40px; background: rgba(0,0,0,0.85); border-radius: 100px; align-items: center;
-            border: 2px solid rgba(255,255,255,0.1);
         }
-        .lives-container { display: flex; gap: 8px; font-size: 2.2rem; }
-        .heart { color: var(--red); text-shadow: 2px 2px #000; transition: 0.3s; }
-        .heart.lost { opacity: 0; transform: scale(0); }
-
         .word-box {
-            background: #fff; color: #111; padding: 20px; border-radius: 35px;
+            background: #fff; color: #111; border-radius: 35px;
             width: 700px; height: 260px; display: flex; justify-content: center; align-items: center;
             box-shadow: 0 18px 0px #bdc3c7;
         }
-        #word-text { font-size: 8rem; text-align: center; text-transform: uppercase; font-weight: 900; line-height: 0.9; }
+        #word-text { font-size: 8rem; text-align: center; text-transform: uppercase; font-weight: 900; }
 
-        .controls { display: flex; gap: 25px; align-items: center; }
-
-        /* PANIC MODE */
-        @keyframes shake {
-            0% { transform: translate(1px, 1px) rotate(0deg); }
-            10% { transform: translate(-1px, -2px) rotate(-1deg); }
-            100% { transform: translate(1px, -2px) rotate(-1deg); }
-        }
-        .panic-shake { animation: shake 0.2s infinite; }
-        .panic-text { color: #ff4757 !important; }
-
+        /* BUTTONS */
         .btn {
-            padding: 15px 45px; font-size: 1.4rem; font-weight: 900; border-radius: 100px; border: none; cursor: pointer; color: white;
-            background: linear-gradient(to bottom, #f1c40f 0%, #d35400 100%); box-shadow: 0 8px 0 #914500; text-transform: uppercase;
+            padding: 12px 35px; font-size: 1.2rem; font-weight: 900; border-radius: 100px; border: none; cursor: pointer; color: white;
+            background: linear-gradient(to bottom, #f1c40f 0%, #d35400 100%); box-shadow: 0 6px 0 #914500; text-transform: uppercase;
         }
-        .btn-green { background: linear-gradient(to bottom, #2ecc71, #27ae60); box-shadow: 0 8px 0 #1e8449; }
-        .btn-red { background: linear-gradient(to bottom, #e74c3c, #c0392b); box-shadow: 0 8px 0 #962d22; }
+        .btn-green { background: linear-gradient(to bottom, #2ecc71, #27ae60); box-shadow: 0 6px 0 #1e8449; }
+        .btn-red { background: linear-gradient(to bottom, #e74c3c, #c0392b); box-shadow: 0 6px 0 #962d22; }
+        .btn-grey { background: #7f8c8d; box-shadow: 0 6px 0 #2c3e50; }
+        .btn:active { transform: translateY(3px); box-shadow: 0 3px 0 #914500; }
+
+        /* PANIC SHAKE */
+        @keyframes shake { 0%, 100% {transform: translate(0,0)} 25% {transform: translate(2px,2px)} 75% {transform: translate(-2px,-2px)} }
+        .panic-shake { animation: shake 0.1s infinite; }
 
         #end-modal {
             position: absolute; inset: 0; background: rgba(0,0,0,0.95); z-index: 200; 
@@ -81,109 +82,94 @@
 
 <div class="game-container" id="main-board">
     
-    <!-- 1. TEACHER DASHBOARD -->
+    <!-- 1. TEACHER DASHBOARD (2-COLUMN) -->
     <div id="setup-screen" class="screen active">
-        <h1 style="font-family:'Luckiest Guy'; font-size:3rem; color:var(--gold); margin-bottom: 10px;">TEACHER SETTINGS</h1>
+        <h1 style="font-family:'Luckiest Guy'; font-size:2.5rem; color:var(--gold); margin-bottom:10px;">TEACHER SETTINGS</h1>
         <div class="setup-box">
             <div class="cat-group"><label>🦷 BODY PART</label><input type="text" class="save-data" data-cat="BODY PART"></div>
-            <div class="cat-group"><label>🍔 FOOD</label><input type="text" class="save-data" data-cat="FOOD"></div>
-            <div class="cat-group"><label>👮 JOB</label><input type="text" class="save-data" data-cat="JOB"></div>
-            <div class="cat-group"><label>🦁 ANIMAL</label><input type="text" class="save-data" data-cat="ANIMAL"></div>
             <div class="cat-group"><label>📍 PLACE</label><input type="text" class="save-data" data-cat="PLACE"></div>
+            <div class="cat-group"><label>🍔 FOOD</label><input type="text" class="save-data" data-cat="FOOD"></div>
             <div class="cat-group"><label>🏃 ACTION</label><input type="text" class="save-data" data-cat="ACTION"></div>
+            <div class="cat-group"><label>👮 JOB</label><input type="text" class="save-data" data-cat="JOB"></div>
             <div class="cat-group"><label>💡 OBJECT</label><input type="text" class="save-data" data-cat="OBJECT"></div>
+            <div class="cat-group"><label>🦁 ANIMAL</label><input type="text" class="save-data" data-cat="ANIMAL"></div>
+            <div class="cat-group"><label>🎆 EVENTS</label><input type="text" class="save-data" data-cat="EVENTS"></div>
         </div>
         
-        <div class="volume-panel">
-            <span>🔊 Volume:</span>
-            <input type="range" id="vol-slider" min="0" max="1" step="0.1" value="0.5" onchange="updateVolume()">
-        </div>
-
-        <div style="margin-top:20px; display:flex; gap:15px;">
+        <div style="margin-top:20px; display:flex; align-items:center; gap:25px;">
+            <div style="background:rgba(0,0,0,0.3); padding:10px 20px; border-radius:50px;">
+                <span>🔊 VOL:</span>
+                <input type="range" id="vol-slider" min="0" max="1" step="0.1" value="0.5" onchange="updateVolume()">
+            </div>
+            <button class="btn btn-grey" onclick="resetMemory()">RESET</button>
             <button class="btn btn-green" onclick="saveAndEnter()">ENTER</button>
-            <button class="btn" style="background:#7f8c8d; box-shadow:0 8px 0 #2c3e50" onclick="resetMemory()">RESET</button>
         </div>
     </div>
 
-    <!-- 2. TITLE PAGE -->
+    <!-- 2. STAMP TITLE PAGE -->
     <div id="title-screen" class="screen">
-        <h1 style="font-family:'Luckiest Guy'; font-size:10rem; color:var(--gold); margin:0; text-shadow: 10px 10px 0 #000;">PINOY HENYO</h1>
-        <div style="margin-top:30px; display:flex; gap:20px;">
-            <button class="btn" style="font-size:2.5rem; padding: 20px 70px;" onclick="startCountdown()">START</button>
-            <button class="btn" style="background:#7f8c8d; box-shadow:0 8px 0 #2c3e50" onclick="showScreen('setup-screen')">BACK</button>
+        <div class="stamp-container">
+            <div class="stamp-inner">
+                <p class="text-pinoy">PINOY</p>
+                <p class="text-henyo">HENYO</p>
+            </div>
+        </div>
+        <div style="margin-top:40px; display:flex; gap:20px;">
+            <button class="btn" style="font-size:2rem; padding: 15px 60px;" onclick="startCountdown()">START GAME</button>
+            <button class="btn btn-grey" onclick="showScreen('setup-screen')">SETTINGS</button>
         </div>
     </div>
 
     <!-- 3. COUNTDOWN -->
     <div id="countdown-screen" class="screen">
-        <h1 id="count-number" style="font-family:'Luckiest Guy'; font-size:18rem; color:var(--gold); text-shadow: 12px 12px 0 #000;">3</h1>
+        <h1 id="count-number" style="font-family:'Luckiest Guy'; font-size:15rem; color:var(--gold);">3</h1>
     </div>
 
     <!-- 4. GAME SCREEN -->
     <div id="game-screen" class="screen">
         <div class="hud">
-            <div id="category-display" style="font-size: 1.8rem; font-family:'Luckiest Guy'; color:var(--gold);">CATEGORY: ???</div>
-            <div class="lives-container">
-                <span class="heart" id="h1">❤</span>
-                <span class="heart" id="h2">❤</span>
-                <span class="heart" id="h3">❤</span>
-            </div>
-            <div id="timer-display" style="font-size: 2.2rem; font-family:'Luckiest Guy'; color:white;">2:00</div>
+            <div id="category-display" style="font-size: 1.5rem; font-family:'Luckiest Guy'; color:var(--gold);">CATEGORY: ???</div>
+            <div id="timer-display" style="font-size: 2rem; font-family:'Luckiest Guy'; color:white;">2:00</div>
         </div>
-        
         <div class="word-box"><div id="word-text">...</div></div>
-
         <div class="controls">
             <button class="btn btn-green" onclick="handleCorrect()">CORRECT ✔</button>
             <button class="btn btn-red" onclick="handlePass()">PASS ⏭</button>
         </div>
-        
-        <h2 style="margin: 0; font-size: 1.8rem; font-family:'Luckiest Guy';">SCORE: <span id="score" style="color:var(--gold)">0</span></h2>
+        <h2 style="margin:0; font-family:'Luckiest Guy';">SCORE: <span id="score" style="color:var(--gold)">0</span></h2>
     </div>
 
     <!-- END MODAL -->
     <div id="end-modal">
-        <h1 id="end-title" style="font-size:7rem; color:var(--red); font-family:'Luckiest Guy'; text-align:center;"></h1>
-        <p style="font-size:3rem">FINAL SCORE: <span id="final-score" style="color:var(--gold)">0</span></p>
-        <button class="btn" onclick="location.reload()">RESTART</button>
+        <h1 id="end-title" style="font-size:6rem; color:var(--gold); font-family:'Luckiest Guy';"></h1>
+        <p style="font-size:2.5rem">FINAL SCORE: <span id="final-score">0</span></p>
+        <button class="btn" onclick="location.reload()">PLAY AGAIN</button>
     </div>
 </div>
 
-<!-- Audio Assets -->
 <audio id="snd-correct" src="correct.mp3"></audio>
 <audio id="snd-pass" src="pass.mp3"></audio>
 <audio id="snd-timer" src="timer.mp3"></audio>
 <audio id="snd-321go" src="321go.mp3"></audio>
+<audio id="snd-finish" src="finish.mp3"></audio>
 <audio id="snd-over" src="start.mp3"></audio>
 
 <script>
-    let gameQueue = [];
-    let currentIndex = 0;
-    let score = 0;
-    let lives = 3;
-    let timer;
-    let timeLeft = 120;
-    let globalVolume = 0.5;
+    let gameQueue = [], currentIndex = 0, score = 0, timer, timeLeft = 120, vol = 0.5;
 
     window.onload = function() {
-        const inputs = document.querySelectorAll('.save-data');
-        inputs.forEach(input => {
-            const savedValue = localStorage.getItem('henyo_' + input.getAttribute('data-cat'));
-            if (savedValue) input.value = savedValue;
+        document.querySelectorAll('.save-data').forEach(input => {
+            input.value = localStorage.getItem('henyo_' + input.dataset.cat) || "";
         });
-        
-        const savedVol = localStorage.getItem('henyo_vol');
-        if(savedVol) {
-            globalVolume = savedVol;
-            document.getElementById('vol-slider').value = savedVol;
-        }
+        vol = localStorage.getItem('henyo_vol') || 0.5;
+        document.getElementById('vol-slider').value = vol;
         updateVolume();
     };
 
     function updateVolume() {
-        globalVolume = document.getElementById('vol-slider').value;
-        localStorage.setItem('henyo_vol', globalVolume);
-        document.querySelectorAll('audio').forEach(a => a.volume = globalVolume);
+        vol = document.getElementById('vol-slider').value;
+        localStorage.setItem('henyo_vol', vol);
+        document.querySelectorAll('audio').forEach(a => a.volume = vol);
     }
 
     function showScreen(id) {
@@ -193,68 +179,54 @@
 
     function saveAndEnter() {
         document.querySelectorAll('.save-data').forEach(input => {
-            localStorage.setItem('henyo_' + input.getAttribute('data-cat'), input.value);
+            localStorage.setItem('henyo_' + input.dataset.cat, input.value);
         });
         showScreen('title-screen');
     }
 
     function resetMemory() {
-        if(confirm("Clear words?")) { localStorage.clear(); location.reload(); }
+        if(confirm("Clear all words?")) { localStorage.clear(); location.reload(); }
     }
 
     function startCountdown() {
         showScreen('countdown-screen');
-        const snd = document.getElementById('snd-321go');
-        snd.currentTime = 0; snd.play();
-        let count = 3;
-        const countEl = document.getElementById('count-number');
-        const countInterval = setInterval(() => {
-            count--;
-            if (count > 0) countEl.innerText = count;
-            else if (count === 0) countEl.innerText = "GO!";
-            else { clearInterval(countInterval); prepareAndStart(); }
+        document.getElementById('snd-321go').play();
+        let c = 3;
+        const el = document.getElementById('count-number');
+        const itv = setInterval(() => {
+            c--;
+            if(c > 0) el.innerText = c;
+            else if(c === 0) el.innerText = "GO!";
+            else { clearInterval(itv); prepareGame(); }
         }, 1000);
     }
 
-    function prepareAndStart() {
+    function prepareGame() {
         gameQueue = [];
         document.querySelectorAll('.save-data').forEach(input => {
-            if (input.value) {
-                const category = input.getAttribute('data-cat');
+            if(input.value) {
                 input.value.split(',').forEach(w => {
-                    if (w.trim()) {
-                        gameQueue.push({ word: w.trim(), cat: category });
-                    }
+                    if(w.trim()) gameQueue.push({w: w.trim(), c: input.dataset.cat});
                 });
             }
         });
-
-        if (gameQueue.length === 0) return showScreen('setup-screen');
-        
-        // FISHER-YATES SHUFFLE: Keeps word and its specific category together
+        if(!gameQueue.length) return showScreen('setup-screen');
+        // Shuffle
         for (let i = gameQueue.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [gameQueue[i], gameQueue[j]] = [gameQueue[j], gameQueue[i]];
         }
-
         showScreen('game-screen');
         showWord();
         startTimer();
     }
 
     function showWord() {
-        if (currentIndex < gameQueue.length) {
+        if(currentIndex < gameQueue.length) {
             const item = gameQueue[currentIndex];
-            const textEl = document.getElementById('word-text');
-            textEl.innerText = item.word;
-            document.getElementById('category-display').innerText = "CATEGORY: " + item.cat;
-            
-            // Dynamic Font Sizing
-            let fs = 8; textEl.style.fontSize = fs + "rem";
-            while ((textEl.scrollHeight > 250 || textEl.scrollWidth > 680) && fs > 2) {
-                fs -= 0.5; textEl.style.fontSize = fs + "rem";
-            }
-        } else endGame("FINISHED!");
+            document.getElementById('word-text').innerText = item.w;
+            document.getElementById('category-display').innerText = "CATEGORY: " + item.c;
+        } else endGame(true); // TRIGGER FINISH
     }
 
     function handleCorrect() {
@@ -266,10 +238,7 @@
 
     function handlePass() {
         document.getElementById('snd-pass').play();
-        document.getElementById('h' + lives).classList.add('lost');
-        lives--;
-        if (lives === 0) endGame("GAME OVER!"); 
-        else next();
+        next();
     }
 
     function next() { currentIndex++; showWord(); }
@@ -277,27 +246,23 @@
     function startTimer() {
         timer = setInterval(() => {
             timeLeft--;
-            let m = Math.floor(timeLeft / 60);
-            let s = timeLeft % 60;
-            const display = document.getElementById('timer-display');
-            const board = document.getElementById('main-board');
-            display.innerText = `${m}:${s < 10 ? '0'+s : s}`;
-            
-            if (timeLeft === 10) {
+            let m = Math.floor(timeLeft/60), s = timeLeft%60;
+            document.getElementById('timer-display').innerText = `${m}:${s<10?'0'+s:s}`;
+            if(timeLeft === 10) {
                 document.getElementById('snd-timer').play();
-                display.classList.add('panic-text');
-                board.classList.add('panic-shake');
+                document.getElementById('main-board').classList.add('panic-shake');
             }
-            if (timeLeft <= 0) endGame("TIME'S UP!");
+            if(timeLeft <= 0) endGame(false);
         }, 1000);
     }
 
-    function endGame(msg) {
+    function endGame(isFinish) {
         clearInterval(timer);
-        document.getElementById('snd-over').play();
         document.getElementById('main-board').classList.remove('panic-shake');
+        if(isFinish) document.getElementById('snd-finish').play();
+        else document.getElementById('snd-over').play();
         document.getElementById('end-modal').style.display = 'flex';
-        document.getElementById('end-title').innerText = msg;
+        document.getElementById('end-title').innerText = isFinish ? "EXCELLENT!" : "TIME'S UP!";
         document.getElementById('final-score').innerText = score;
     }
 </script>
