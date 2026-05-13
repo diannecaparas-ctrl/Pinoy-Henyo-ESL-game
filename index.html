@@ -26,13 +26,13 @@
 
         /* 2-COLUMN TEACHER DASHBOARD */
         .setup-box { 
-            background: rgba(255,255,255,0.9); padding: 25px; border-radius: 20px; 
-            width: 800px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px;
+            background: rgba(255,255,255,0.9); padding: 20px; border-radius: 20px; 
+            width: 850px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px;
         }
         .cat-group label { font-weight: bold; color: var(--dark); display: block; font-size: 0.9rem; margin-bottom: 3px; }
-        .cat-group input { width: 90%; padding: 8px; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem; }
+        .cat-group input { width: 92%; padding: 8px; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem; }
 
-        /* STAMP TITLE SCREEN (From image_7237a1.jpg) */
+        /* STAMP TITLE SCREEN */
         #title-screen { background: var(--blue); }
         .stamp-container {
             background-color: var(--gold); padding: 15px; position: relative;
@@ -45,7 +45,7 @@
         .text-pinoy { font-family: 'Luckiest Guy'; font-size: 8rem; color: white; margin: 0; line-height: 0.8; }
         .text-henyo { font-family: 'Luckiest Guy'; font-size: 9rem; color: var(--gold); margin: 0; line-height: 0.8; }
 
-        /* GAME HUD & CARD */
+        /* GAME LAYOUT */
         #game-screen { gap: 20px; }
         .hud {
             width: 90%; height: 70px; display: flex; justify-content: space-between;
@@ -211,11 +211,13 @@
             }
         });
         if(!gameQueue.length) return showScreen('setup-screen');
-        // Shuffle
+        
+        // Fisher-Yates Shuffle
         for (let i = gameQueue.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [gameQueue[i], gameQueue[j]] = [gameQueue[j], gameQueue[i]];
         }
+        
         showScreen('game-screen');
         showWord();
         startTimer();
@@ -226,7 +228,7 @@
             const item = gameQueue[currentIndex];
             document.getElementById('word-text').innerText = item.w;
             document.getElementById('category-display').innerText = "CATEGORY: " + item.c;
-        } else endGame(true); // TRIGGER FINISH
+        } else endGame(true); // Trigger Finish Audio
     }
 
     function handleCorrect() {
@@ -259,10 +261,16 @@
     function endGame(isFinish) {
         clearInterval(timer);
         document.getElementById('main-board').classList.remove('panic-shake');
-        if(isFinish) document.getElementById('snd-finish').play();
-        else document.getElementById('snd-over').play();
+        
+        if(isFinish) {
+            document.getElementById('snd-finish').play();
+            document.getElementById('end-title').innerText = "EXCELLENT!";
+        } else {
+            document.getElementById('snd-over').play();
+            document.getElementById('end-title').innerText = "TIME'S UP!";
+        }
+        
         document.getElementById('end-modal').style.display = 'flex';
-        document.getElementById('end-title').innerText = isFinish ? "EXCELLENT!" : "TIME'S UP!";
         document.getElementById('final-score').innerText = score;
     }
 </script>
